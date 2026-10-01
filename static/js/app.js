@@ -1,113 +1,119 @@
 /**
- * Disaster UAV Command Center — Operational Client Application
- * Reference 1: Kaggle-Inspired Clean Information Architecture
- * Reference 2: Spatial Monitoring Layout (One Dominant Viewport + Context Panel)
+ * TRINETRA — Disaster UAV Command Center Client Application
+ * Layout: Left Primary Analysis (~58%) + Right UAV Evidence Preview (~42%)
  * Connects directly to FastAPI POST /api/v1/analysis/multimodal
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM Elements — Inputs & Actions
+  // DOM Elements — Ingestion & View Management
   const imageUploadInput = document.getElementById("image-upload-input");
-  const loadSampleBtn = document.getElementById("load-sample-btn");
-  const emptyLoadSampleBtn = document.getElementById("empty-load-sample-btn");
-  const analyzeBtn = document.getElementById("analyze-btn");
-  const viewportContainer = document.getElementById("viewport-container");
+  const btnHeaderUpload = document.getElementById("btn-header-upload");
+  const btnLoadSample = document.getElementById("btn-load-sample");
+  const btnEmptySample = document.getElementById("btn-empty-sample");
   const emptyState = document.getElementById("empty-state");
+  const activeDashboard = document.getElementById("active-dashboard");
+  const labelMediaFilename = document.getElementById("label-media-filename");
+  const previewMetaTag = document.getElementById("preview-meta-tag");
+
+  // Navigation Items
+  const navMonitor = document.getElementById("nav-monitor");
+  const navHistory = document.getElementById("nav-history");
+  const navSettings = document.getElementById("nav-settings");
+  const btnOpenDiagnostics = document.getElementById("btn-open-diagnostics");
+
+  // UAV Preview & Canvas Elements
   const uavCanvas = document.getElementById("uav-canvas");
   const ctx = uavCanvas.getContext("2d");
   const detectionTooltip = document.getElementById("detection-tooltip");
-  const loadedFilename = document.getElementById("loaded-filename");
-  const mediaMetaBadge = document.getElementById("media-meta-badge");
-
-  // View switchers
-  const btnViewSensor = document.getElementById("btn-view-sensor");
-  const btnViewMap = document.getElementById("btn-view-map");
-  const canvasWrapper = document.getElementById("canvas-wrapper");
-  const geoMapView = document.getElementById("geo-map-view");
-  const geoDetectionsGroup = document.getElementById("geo-detections-group");
-
-  // Floating controls
   const toggleYolo = document.getElementById("toggle-yolo");
   const toggleSeg = document.getElementById("toggle-seg");
   const confSlider = document.getElementById("conf-slider");
   const confVal = document.getElementById("conf-val");
-  const toolbarPersonCount = document.getElementById("toolbar-person-count");
   const btnZoomFit = document.getElementById("btn-zoom-fit");
-  const btnFullscreen = document.getElementById("btn-fullscreen");
-
-  // Overlays & Telemetry
+  const tabSensorView = document.getElementById("tab-sensor-view");
+  const tabGeoView = document.getElementById("tab-geo-view");
+  const canvasHolder = document.getElementById("canvas-holder");
+  const geoMapHolder = document.getElementById("geo-map-holder");
+  const geoMarkersLayer = document.getElementById("geo-markers-layer");
   const loadingOverlay = document.getElementById("loading-overlay");
-  const systemStatusPill = document.getElementById("system-status-pill");
-  const deviceInfoText = document.getElementById("device-info-text");
 
-  // Right Panel: Section 1 Situation
-  const headerPriorityBadge = document.getElementById("header-priority-badge");
-  const situationHazardTag = document.getElementById("situation-hazard-tag");
-  const urgencyLevelTag = document.getElementById("urgency-level-tag");
-  const urgencyNumber = document.getElementById("urgency-number");
-  const urgencyBarFill = document.getElementById("urgency-bar-fill");
-  const uncertaintyLevelTag = document.getElementById("uncertainty-level-tag");
-  const uncertaintyNumber = document.getElementById("uncertainty-number");
-  const uncertaintyBarFill = document.getElementById("uncertainty-bar-fill");
-  const situationSummaryText = document.getElementById("situation-summary-text");
+  // Primary Analysis: Section 1 Assessment
+  const valPersonsCount = document.getElementById("val-persons-count");
+  const badgePriority = document.getElementById("badge-priority");
+  const valUrgencyScore = document.getElementById("val-urgency-score");
+  const valUrgencyLevel = document.getElementById("val-urgency-level");
+  const barUrgency = document.getElementById("bar-urgency");
+  const valUncertaintyScore = document.getElementById("val-uncertainty-score");
+  const valUncertaintyLevel = document.getElementById("val-uncertainty-level");
+  const barUncertainty = document.getElementById("bar-uncertainty");
+  const badgeHazard = document.getElementById("badge-hazard");
+  const badgeAccess = document.getElementById("badge-access");
+  const textSituationSummary = document.getElementById("text-situation-summary");
   const btnToggleFactors = document.getElementById("btn-toggle-factors");
+  const factorsDrawer = document.getElementById("factors-drawer");
   const factorsList = document.getElementById("factors-list");
 
-  // Right Panel: Section 2 Environmental
-  const accessPill = document.getElementById("access-pill");
-  const envWaterPct = document.getElementById("env-water-pct");
-  const envWaterBar = document.getElementById("env-water-bar");
-  const envDebrisPct = document.getElementById("env-debris-pct");
-  const envDebrisBar = document.getElementById("env-debris-bar");
-  const envRoadPct = document.getElementById("env-road-pct");
-  const envRoadBar = document.getElementById("env-road-bar");
-  const envTreePct = document.getElementById("env-tree-pct");
-  const envTreeBar = document.getElementById("env-tree-bar");
-  const envDamagePct = document.getElementById("env-damage-pct");
-  const envDamageBar = document.getElementById("env-damage-bar");
-  const capabilityPills = document.getElementById("capability-pills");
+  // Primary Analysis: Section 2 Environmental Context
+  const pctWater = document.getElementById("pct-water");
+  const barWater = document.getElementById("bar-water");
+  const pctDebris = document.getElementById("pct-debris");
+  const barDebris = document.getElementById("bar-debris");
+  const pctRoad = document.getElementById("pct-road");
+  const barRoad = document.getElementById("bar-road");
+  const pctTree = document.getElementById("pct-tree");
+  const barTree = document.getElementById("bar-tree");
+  const valDamagePct = document.getElementById("val-damage-pct");
+  const btnToggleDamageDetails = document.getElementById("btn-toggle-damage-details");
+  const damageBreakdownPopover = document.getElementById("damage-breakdown-popover");
+  const damageSubclassesList = document.getElementById("damage-subclasses-list");
+  const capabilitiesTagsList = document.getElementById("capabilities-tags-list");
 
-  // Right Panel: Section 3 Detections
-  const detectionsTotalTag = document.getElementById("detections-total-tag");
-  const selectedTrackId = document.getElementById("selected-track-id");
-  const selectedTrackStatus = document.getElementById("selected-track-status");
-  const selectedTrackConf = document.getElementById("selected-track-conf");
-  const selectedTrackUncertainty = document.getElementById("selected-track-uncertainty");
-  const selectedTrackCoords = document.getElementById("selected-track-coords");
-  const listCounterText = document.getElementById("list-counter-text");
-  const detectionsItemsList = document.getElementById("detections-items-list");
-
-  // Right Panel: Section 4 Recommendations
+  // Primary Analysis: Section 3 Recommendation
   const recResourceName = document.getElementById("rec-resource-name");
   const recResourceType = document.getElementById("rec-resource-type");
   const recSuitabilityVal = document.getElementById("rec-suitability-val");
+  const recMatchedCapability = document.getElementById("rec-matched-capability");
   const recDistanceVal = document.getElementById("rec-distance-val");
-  const recReviewStatus = document.getElementById("rec-review-status");
-  const recCapabilitiesList = document.getElementById("rec-capabilities-list");
+  const badgeRecStatus = document.getElementById("badge-rec-status");
   const recRationaleText = document.getElementById("rec-rationale-text");
-  const btnReviewRecommendation = document.getElementById("btn-review-recommendation");
+  const btnOpenReviewModal = document.getElementById("btn-open-review-modal");
 
-  // Bottom Analytics Bar
-  const bottomAnalyticsBar = document.getElementById("bottom-analytics-bar");
-  const btnToggleAnalytics = document.getElementById("btn-toggle-analytics");
-  const metricFrameStatus = document.getElementById("metric-frame-status");
-  const metricLatency = document.getElementById("metric-latency");
-  const metricTracks = document.getElementById("metric-tracks");
-  const trackChipsScroll = document.getElementById("track-chips-scroll");
-  const timelineEmptyHint = document.getElementById("timeline-empty-hint");
+  // Selected Detection Inspector
+  const valSelectedTrackId = document.getElementById("val-selected-track-id");
+  const valSelectedConf = document.getElementById("val-selected-conf");
+  const valSelectedStatus = document.getElementById("val-selected-status");
+  const valSelectedCoords = document.getElementById("val-selected-coords");
+  const valSelectedUncertainty = document.getElementById("val-selected-uncertainty");
+  const trackChipsList = document.getElementById("track-chips-list");
+
+  // Bottom Timeline
+  const bottomTimelineBar = document.getElementById("bottom-timeline-bar");
+  const timelineLatencyText = document.getElementById("timeline-latency-text");
 
   // Modals
-  const safetyModal = document.getElementById("safety-modal");
-  const btnOpenSafetyDetails = document.getElementById("btn-open-safety-details");
-  const btnCloseSafetyModal = document.getElementById("btn-close-safety-modal");
-  const btnDismissSafetyModal = document.getElementById("btn-dismiss-safety-modal");
-  const navSafety = document.getElementById("nav-safety");
+  const modalDiagnostics = document.getElementById("modal-diagnostics");
+  const btnCloseDiagnostics = document.getElementById("btn-close-diagnostics");
+  const btnDismissDiagnostics = document.getElementById("btn-dismiss-diagnostics");
+  const diagDevice = document.getElementById("diag-device");
+  const diagGpu = document.getElementById("diag-gpu");
+  const diagCuda = document.getElementById("diag-cuda");
+  const diagStatus = document.getElementById("diag-status");
 
-  const reviewModal = document.getElementById("review-modal");
-  const reviewDialogContent = document.getElementById("review-dialog-content");
-  const btnCloseReviewModal = document.getElementById("btn-close-review-modal");
+  const modalHistory = document.getElementById("modal-history");
+  const btnCloseHistory = document.getElementById("btn-close-history");
+  const btnDismissHistory = document.getElementById("btn-dismiss-history");
+  const historyList = document.getElementById("history-list");
+
+  const modalLimitations = document.getElementById("modal-limitations");
+  const btnOpenLimitations = document.getElementById("btn-open-limitations");
+  const btnCloseLimitations = document.getElementById("btn-close-limitations");
+  const btnDismissLimitations = document.getElementById("btn-dismiss-limitations");
+
+  const modalReview = document.getElementById("modal-review");
+  const btnCloseReview = document.getElementById("btn-close-review");
   const btnCancelReview = document.getElementById("btn-cancel-review");
-  const btnAuthorizeReview = document.getElementById("btn-authorize-review");
+  const btnConfirmReview = document.getElementById("btn-confirm-review");
+  const reviewModalBody = document.getElementById("review-modal-body");
 
   const toastCenter = document.getElementById("toast-center");
 
@@ -116,37 +122,24 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentImage = null;
   let currentResult = null;
   let selectedDetectionIndex = null;
-  let renderedBoundingBoxes = []; // Cached screen coordinates for hit testing
+  let renderedBoundingBoxes = [];
+  const sessionHistory = [];
 
-  // Initialize Diagnostics & Health Check
+  // Initialize Diagnostics from backend
   fetchSystemHealth();
 
   // --------------------------------------------------------------------------
   // EVENT LISTENERS
   // --------------------------------------------------------------------------
 
-  // Threshold slider
-  confSlider.addEventListener("input", (e) => {
-    confVal.textContent = parseFloat(e.target.value).toFixed(2);
-    renderCanvas();
-  });
-
-  // Toggles
-  toggleYolo.addEventListener("change", () => renderCanvas());
-  toggleSeg.addEventListener("change", () => renderCanvas());
-
-  // View Switcher (Sensor vs Geo View)
-  btnViewSensor.addEventListener("click", () => switchView("sensor"));
-  btnViewMap.addEventListener("click", () => switchView("map"));
-
-  // File Upload
+  // Ingestion File Picker
   imageUploadInput.addEventListener("change", (e) => {
     if (e.target.files && e.target.files[0]) {
       handleFileSelected(e.target.files[0]);
     }
   });
 
-  // Sample Load
+  // Sample Load Action
   const loadSampleAction = async () => {
     try {
       showToast("Loading VisDrone sample validation frame...", "info");
@@ -156,114 +149,108 @@ document.addEventListener("DOMContentLoaded", () => {
         const file = new File([blob], "visdrone_val_0000001.jpg", { type: "image/jpeg" });
         handleFileSelected(file);
       } else {
-        createSyntheticSampleRecon();
+        createSyntheticSample();
       }
     } catch (err) {
-      createSyntheticSampleRecon();
+      createSyntheticSample();
     }
   };
 
-  loadSampleBtn.addEventListener("click", loadSampleAction);
-  if (emptyLoadSampleBtn) {
-    emptyLoadSampleBtn.addEventListener("click", loadSampleAction);
-  }
+  btnLoadSample.addEventListener("click", loadSampleAction);
+  btnEmptySample.addEventListener("click", loadSampleAction);
 
-  // Assessment Trigger
-  analyzeBtn.addEventListener("click", () => {
-    if (currentFile) {
-      executeMultimodalAnalysis(currentFile);
-    }
-  });
-
-  // Drag and drop onto viewport
-  viewportContainer.addEventListener("dragover", (e) => {
-    e.preventDefault();
-  });
-  viewportContainer.addEventListener("drop", (e) => {
+  // Drag & drop onto empty state
+  emptyState.addEventListener("dragover", (e) => e.preventDefault());
+  emptyState.addEventListener("drop", (e) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileSelected(e.dataTransfer.files[0]);
     }
   });
 
-  // Fit & Fullscreen
+  // Controls: Confidence threshold & layer toggles
+  confSlider.addEventListener("input", (e) => {
+    confVal.textContent = parseFloat(e.target.value).toFixed(2);
+    renderCanvas();
+  });
+  toggleYolo.addEventListener("change", () => renderCanvas());
+  toggleSeg.addEventListener("change", () => renderCanvas());
   btnZoomFit.addEventListener("click", () => {
     uavCanvas.style.transform = "scale(1)";
-    showToast("Viewport reset to fit", "info");
   });
 
-  btnFullscreen.addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      viewportContainer.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
+  // View Switcher (Sensor vs Geo View)
+  tabSensorView.addEventListener("click", () => {
+    tabSensorView.classList.add("active");
+    tabGeoView.classList.remove("active");
+    canvasHolder.style.display = "flex";
+    geoMapHolder.style.display = "none";
   });
 
-  // Bottom Analytics Toggle
-  btnToggleAnalytics.addEventListener("click", () => {
-    bottomAnalyticsBar.classList.toggle("collapsed");
-    btnToggleAnalytics.classList.toggle("collapsed");
+  tabGeoView.addEventListener("click", () => {
+    tabGeoView.classList.add("active");
+    tabSensorView.classList.remove("active");
+    canvasHolder.style.display = "none";
+    geoMapHolder.style.display = "block";
   });
 
-  // Contributing Factors Toggle
+  // Contributing Factors Accordion Toggle
   btnToggleFactors.addEventListener("click", () => {
     const isExpanded = btnToggleFactors.getAttribute("aria-expanded") === "true";
     btnToggleFactors.setAttribute("aria-expanded", !isExpanded);
-    factorsList.style.display = isExpanded ? "none" : "block";
+    factorsDrawer.style.display = isExpanded ? "none" : "block";
   });
 
-  // Section Header Collapsibles in Right Panel
-  document.querySelectorAll(".section-header-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const isExpanded = btn.getAttribute("aria-expanded") === "true";
-      btn.setAttribute("aria-expanded", !isExpanded);
-      const targetId = btn.getAttribute("data-target");
-      const targetContent = document.getElementById(targetId);
-      if (targetContent) {
-        targetContent.style.display = isExpanded ? "none" : "block";
-      }
-    });
+  // Building Damage Breakdown Popover Toggle
+  btnToggleDamageDetails.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isVisible = damageBreakdownPopover.style.display === "block";
+    damageBreakdownPopover.style.display = isVisible ? "none" : "block";
   });
 
-  // Collapse/Expand all sections button
-  const btnCollapseAll = document.getElementById("btn-collapse-all-sections");
-  let allCollapsed = false;
-  if (btnCollapseAll) {
-    btnCollapseAll.addEventListener("click", () => {
-      allCollapsed = !allCollapsed;
-      document.querySelectorAll(".section-header-btn").forEach((btn) => {
-        btn.setAttribute("aria-expanded", !allCollapsed);
-        const targetId = btn.getAttribute("data-target");
-        const targetContent = document.getElementById(targetId);
-        if (targetContent) {
-          targetContent.style.display = allCollapsed ? "none" : "block";
-        }
-      });
-    });
-  }
+  document.addEventListener("click", () => {
+    damageBreakdownPopover.style.display = "none";
+  });
 
-  // Modals Listeners
-  const openSafety = () => { safetyModal.style.display = "flex"; };
-  const closeSafety = () => { safetyModal.style.display = "none"; };
-  btnOpenSafetyDetails.addEventListener("click", openSafety);
-  if (navSafety) navSafety.addEventListener("click", openSafety);
-  btnCloseSafetyModal.addEventListener("click", closeSafety);
-  btnDismissSafetyModal.addEventListener("click", closeSafety);
+  // Navigation Items
+  navMonitor.addEventListener("click", () => {
+    // Already in monitor view
+  });
 
-  const openReview = () => { populateReviewModal(); reviewModal.style.display = "flex"; };
-  const closeReview = () => { reviewModal.style.display = "none"; };
-  btnReviewRecommendation.addEventListener("click", openReview);
-  btnCloseReviewModal.addEventListener("click", closeReview);
+  const openHistory = () => { renderHistoryList(); modalHistory.style.display = "flex"; };
+  const closeHistory = () => { modalHistory.style.display = "none"; };
+  navHistory.addEventListener("click", openHistory);
+  btnCloseHistory.addEventListener("click", closeHistory);
+  btnDismissHistory.addEventListener("click", closeHistory);
+
+  const openDiag = () => { modalDiagnostics.style.display = "flex"; };
+  const closeDiag = () => { modalDiagnostics.style.display = "none"; };
+  navSettings.addEventListener("click", openDiag);
+  btnOpenDiagnostics.addEventListener("click", openDiag);
+  btnCloseDiagnostics.addEventListener("click", closeDiag);
+  btnDismissDiagnostics.addEventListener("click", closeDiag);
+
+  const openLimits = () => { modalLimitations.style.display = "flex"; };
+  const closeLimits = () => { modalLimitations.style.display = "none"; };
+  btnOpenLimitations.addEventListener("click", openLimits);
+  btnCloseLimitations.addEventListener("click", closeLimits);
+  btnDismissLimitations.addEventListener("click", closeLimits);
+
+  const openReview = () => { populateReviewModal(); modalReview.style.display = "flex"; };
+  const closeReview = () => { modalReview.style.display = "none"; };
+  btnOpenReviewModal.addEventListener("click", openReview);
+  btnCloseReview.addEventListener("click", closeReview);
   btnCancelReview.addEventListener("click", closeReview);
-  btnAuthorizeReview.addEventListener("click", () => {
+  btnConfirmReview.addEventListener("click", () => {
     closeReview();
-    recReviewStatus.textContent = "Authorized (Coordinator Sign-Off)";
-    recReviewStatus.className = "spec-val tag-success";
-    showToast("Human Authorization Recorded: Advisory recommendation marked as reviewed.", "success");
+    badgeRecStatus.textContent = "AUTHORIZED (HUMAN SIGN-OFF)";
+    badgeRecStatus.style.color = "#16A34A";
+    badgeRecStatus.style.backgroundColor = "#F0FDF4";
+    badgeRecStatus.style.borderColor = "#BBF7D0";
+    showToast("Human Authorization Recorded: Advisory recommendation verified.", "success");
   });
 
-  // Canvas Mouse Interactions (Hit testing detections for clicks & tooltips)
+  // Canvas Hit Testing (Hover & Click Bounding Box)
   uavCanvas.addEventListener("mousemove", (e) => {
     const rect = uavCanvas.getBoundingClientRect();
     const mouseX = (e.clientX - rect.left) * (uavCanvas.width / rect.width);
@@ -281,13 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (hit) {
       uavCanvas.style.cursor = "pointer";
       detectionTooltip.style.display = "block";
-      detectionTooltip.style.left = `${e.clientX + 12}px`;
-      detectionTooltip.style.top = `${e.clientY + 12}px`;
-      detectionTooltip.innerHTML = `
-        <div style="font-weight:600;color:#60A5FA;">${hit.trackId}</div>
-        <div>Confidence: ${(hit.confidence * 100).toFixed(1)}%</div>
-        <div style="color:#94A3B8;font-size:10px;">${hit.coords}</div>
-      `;
+      detectionTooltip.style.left = `${e.clientX + 10}px`;
+      detectionTooltip.style.top = `${e.clientY + 10}px`;
+      detectionTooltip.innerHTML = `<strong>${hit.trackId}</strong> &bull; ${(hit.confidence * 100).toFixed(0)}%`;
     } else {
       uavCanvas.style.cursor = "default";
       detectionTooltip.style.display = "none";
@@ -316,18 +299,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --------------------------------------------------------------------------
-  // CORE FUNCTIONS: FILE SELECTION & INGESTION
+  // FILE HANDLING & ANALYSIS WORKFLOW
   // --------------------------------------------------------------------------
 
   function handleFileSelected(file) {
-    if (!file.type.startsWith("image/")) {
-      showToast("Invalid file: Please provide an aerial reconnaissance image (JPEG, PNG, WebP).", "error");
-      return;
-    }
-
     currentFile = file;
-    loadedFilename.textContent = file.name;
-    analyzeBtn.disabled = false;
+    labelMediaFilename.textContent = file.name;
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -337,26 +314,25 @@ document.addEventListener("DOMContentLoaded", () => {
         currentResult = null;
         selectedDetectionIndex = null;
 
+        // Switch from Empty State to Active Dashboard
         emptyState.style.display = "none";
-        uavCanvas.style.display = "block";
-        mediaMetaBadge.textContent = `${img.naturalWidth} \u00d7 ${img.naturalHeight} px \u2022 ${(file.size / 1024).toFixed(0)} KB`;
+        activeDashboard.style.display = "grid";
+        bottomTimelineBar.style.display = "flex";
+
+        previewMetaTag.textContent = `${img.naturalWidth} \u00d7 ${img.naturalHeight} px`;
 
         renderCanvas();
-        resetPanelsToAwaitingState();
+        // Immediately run multimodal assessment
+        executeMultimodalAnalysis(file);
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 
-  // --------------------------------------------------------------------------
-  // CORE FUNCTIONS: MULTIMODAL API INTEGRATION
-  // --------------------------------------------------------------------------
-
   async function executeMultimodalAnalysis(file) {
     showLoading(true);
-    setStepState("step-upload", "done");
-    setStepState("step-yolo", "active");
+    setLoadingStep("step-yolo", true);
 
     const startTime = performance.now();
     const formData = new FormData();
@@ -366,14 +342,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       setTimeout(() => {
-        setStepState("step-yolo", "done");
-        setStepState("step-seg", "active");
-      }, 350);
+        setLoadingStep("step-yolo", false);
+        setLoadingStep("step-seg", true);
+      }, 400);
 
       setTimeout(() => {
-        setStepState("step-seg", "done");
-        setStepState("step-prio", "active");
-      }, 700);
+        setLoadingStep("step-seg", false);
+        setLoadingStep("step-risk", true);
+      }, 800);
 
       const response = await fetch("/api/v1/analysis/multimodal", {
         method: "POST",
@@ -382,37 +358,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Server returned HTTP ${response.status}`);
+        throw new Error(errorData.detail || `Server error (HTTP ${response.status})`);
       }
 
       const result = await response.json();
       currentResult = result;
       showLoading(false);
 
-      const durationMs = Math.round(performance.now() - startTime);
-      metricLatency.textContent = `Inference: ${durationMs}ms`;
+      const latencyMs = Math.round(performance.now() - startTime);
+      timelineLatencyText.textContent = `Inference: ${latencyMs}ms`;
 
-      // Update All Redesigned Dashboard Panels
+      // Record to session history
+      sessionHistory.unshift({
+        filename: file.name,
+        timestamp: new Date().toLocaleTimeString(),
+        personsCount: result.total_detections_found || 0,
+        priority: result.priority_assessment ? result.priority_assessment.composite_priority : "NORMAL",
+        result: result
+      });
+
+      // Update all dashboard sections
+      updateAssessmentPanel(result);
+      updateEnvironmentalPanel(result.scene_context);
+      updateRecommendationPanel(result.recommendation_outcome);
       updateTelemetry(result.device_info);
-      renderCanvas();
-      populateSituationPanel(result);
-      populateEnvironmentalPanel(result.scene_context);
-      populateDetectionsPanel(result.detections || []);
-      populateRecommendationPanel(result.recommendation_outcome);
-      populateBottomAnalytics(result, durationMs);
       updateGeoMap(result.detections || []);
+      renderCanvas();
 
       const count = result.total_detections_found || 0;
       showToast(`Assessment complete: ${count} potential person${count === 1 ? "" : "s"} identified.`, "success");
 
     } catch (err) {
       showLoading(false);
-      showToast(`Multimodal analysis failed: ${err.message}`, "error");
+      showToast(`Analysis failed: ${err.message}`, "error");
     }
   }
 
   // --------------------------------------------------------------------------
-  // VISUAL WORKSPACE: CANVAS RENDERING
+  // UAV PREVIEW & CANVAS DRAWING
   // --------------------------------------------------------------------------
 
   function renderCanvas() {
@@ -429,12 +412,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!currentResult) return;
 
-    // 1. Environmental Segmentation Context Layer
+    // 1. Environmental segmentation overlay if enabled
     if (toggleSeg.checked && currentResult.scene_context) {
-      drawSegmentationContextOverlay(currentResult.scene_context);
+      drawSegmentationOverlay(currentResult.scene_context);
     }
 
-    // 2. Person Detection Bounding Boxes
+    // 2. Person bounding boxes if enabled
     if (toggleYolo.checked && currentResult.detections) {
       drawBoundingBoxes(currentResult.detections);
     }
@@ -443,11 +426,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function drawBoundingBoxes(detections) {
     const thresh = parseFloat(confSlider.value);
     const filtered = detections.filter(d => d.confidence >= thresh);
-    toolbarPersonCount.textContent = filtered.length;
 
     filtered.forEach((det, idx) => {
       const bx = det.bbox;
-      // Coordinate normalization check
       const x1 = bx.x1 <= 1.0 ? bx.x1 * uavCanvas.width : bx.x1;
       const y1 = bx.y1 <= 1.0 ? bx.y1 * uavCanvas.height : bx.y1;
       const x2 = bx.x2 <= 1.0 ? bx.x2 * uavCanvas.width : bx.x2;
@@ -456,237 +437,220 @@ document.addEventListener("DOMContentLoaded", () => {
       const h = Math.max(2, y2 - y1);
 
       const isSelected = selectedDetectionIndex === idx;
-
-      // Cache box for hit testing
       const trackId = det.track_id ? `TRK-${String(det.track_id).padStart(2, "0")}` : `ID-${idx + 1}`;
-      const coordsText = det.simulated_lat && det.simulated_lon 
-        ? `${det.simulated_lat.toFixed(4)}\u00b0 N, ${det.simulated_lon.toFixed(4)}\u00b0 W` 
-        : "Simulated projection";
 
       renderedBoundingBoxes.push({
         origIndex: idx,
         trackId: trackId,
         confidence: det.confidence,
-        coords: coordsText,
         x1: x1,
         y1: y1,
         x2: x2,
         y2: y2
       });
 
-      // Box Styling — High legibility, restrained colors
       ctx.save();
       if (selectedDetectionIndex !== null && !isSelected) {
-        // Dim unselected detections slightly
         ctx.globalAlpha = 0.45;
       }
 
       const boxColor = isSelected ? "#2563EB" : "#16A34A";
-      const lineWidth = isSelected ? Math.max(3, Math.round(uavCanvas.width / 450)) : Math.max(2, Math.round(uavCanvas.width / 600));
+      const lineWidth = isSelected ? Math.max(3, Math.round(uavCanvas.width / 500)) : Math.max(2, Math.round(uavCanvas.width / 650));
 
-      // Subtle translucent box fill
-      ctx.fillStyle = isSelected ? "rgba(37, 99, 235, 0.15)" : "rgba(22, 163, 74, 0.08)";
-      ctx.fillRect(x1, y1, w, h);
-
-      // Clean border
+      // Crisp border
       ctx.strokeStyle = boxColor;
       ctx.lineWidth = lineWidth;
       ctx.strokeRect(x1, y1, w, h);
 
-      // Compact, collision-aware label pill
+      // Subtle translucent box tint
+      ctx.fillStyle = isSelected ? "rgba(37, 99, 235, 0.12)" : "rgba(22, 163, 74, 0.08)";
+      ctx.fillRect(x1, y1, w, h);
+
+      // Compact collision-aware label pill: TRK-01 · 85%
       const confPct = Math.round(det.confidence * 100);
-      const labelText = `${trackId} \u2022 ${confPct}%`;
-
-      const fontSize = Math.max(11, Math.min(14, Math.round(uavCanvas.width / 110)));
+      const labelText = `${trackId} \u00b7 ${confPct}%`;
+      const fontSize = Math.max(10, Math.min(13, Math.round(uavCanvas.width / 120)));
       ctx.font = `600 ${fontSize}px 'Inter', sans-serif`;
-      const textWidth = ctx.measureText(labelText).width;
-      const pillHeight = fontSize + 8;
-      const pillWidth = textWidth + 12;
 
-      // Position pill above box if room, else inside top
+      const textWidth = ctx.measureText(labelText).width;
+      const pillHeight = fontSize + 6;
+      const pillWidth = textWidth + 8;
+
       let pillY = y1 - pillHeight - 2;
-      if (pillY < 0) {
-        pillY = y1 + 2;
-      }
+      if (pillY < 0) pillY = y1 + 2;
 
       ctx.fillStyle = boxColor;
-      roundRect(ctx, x1, pillY, pillWidth, pillHeight, 3);
+      roundRect(ctx, x1, pillY, pillWidth, pillHeight, 2);
       ctx.fill();
 
-      // Label text
       ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(labelText, x1 + 6, pillY + fontSize);
+      ctx.fillText(labelText, x1 + 4, pillY + fontSize - 1);
 
       ctx.restore();
     });
+
+    // Populate track chips in inspector
+    updateTrackChips(filtered);
   }
 
-  function drawSegmentationContextOverlay(scene) {
+  function drawSegmentationOverlay(scene) {
     if (!scene) return;
     ctx.save();
-
-    // Subtle hazard sector indicator at canvas corner
-    const pad = 16;
-    const badgeW = Math.max(140, Math.round(uavCanvas.width / 6));
-    const badgeH = 26;
-
+    // Subtle hazard status watermark in canvas corner
     ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
-    roundRect(ctx, pad, pad, badgeW, badgeH, 4);
+    roundRect(ctx, 12, 12, 130, 22, 3);
     ctx.fill();
 
-    const sev = (scene.inferred_hazard_severity || "NONE").toUpperCase();
-    ctx.font = "600 11px 'Inter', sans-serif";
+    const sev = (scene.inferred_hazard_severity || "NORMAL").toUpperCase();
+    ctx.font = "600 10px 'Inter', sans-serif";
     ctx.fillStyle = sev === "SEVERE" ? "#F87171" : (sev === "MODERATE" ? "#FBBF24" : "#34D399");
-    ctx.fillText(`Hazard: ${sev}`, pad + 10, pad + 17);
-
+    ctx.fillText(`Hazard: ${sev}`, 20, 26);
     ctx.restore();
   }
 
   // --------------------------------------------------------------------------
-  // RIGHT CONTEXT PANEL POPULATION
+  // PRIMARY ANALYSIS WORKSPACE POPULATION
   // --------------------------------------------------------------------------
 
-  function populateSituationPanel(result) {
+  function updateAssessmentPanel(result) {
     const prio = result.priority_assessment || {};
     const scene = result.scene_context || {};
 
-    // Header priority badge
+    // 1. Potential Persons Count
+    const personCount = result.total_detections_found || 0;
+    valPersonsCount.textContent = personCount;
+
+    // 2. Priority Badge
     const prioLevel = (prio.composite_priority || "STANDBY").toUpperCase();
-    headerPriorityBadge.textContent = prioLevel;
-    headerPriorityBadge.className = "priority-badge-compact " + (
-      prioLevel.includes("CRITICAL") ? "critical" : 
-      prioLevel.includes("HIGH") ? "high" : 
-      prioLevel.includes("ELEVATED") ? "elevated" : ""
+    badgePriority.textContent = prioLevel;
+    badgePriority.className = "badge badge-priority " + (
+      prioLevel.includes("CRITICAL") ? "critical" :
+      prioLevel.includes("HIGH") ? "high" : ""
     );
 
-    // Hazard Severity Tag
-    const hazard = (scene.inferred_hazard_severity || "NORMAL").toUpperCase();
-    situationHazardTag.textContent = hazard;
-
-    // Urgency
+    // 3. Urgency Score & Level
     const urgScore = prio.urgency_score !== undefined ? Math.round(prio.urgency_score * 100) : 0;
-    urgencyNumber.textContent = urgScore;
-    urgencyLevelTag.textContent = prio.urgency_level || "Low";
-    urgencyBarFill.style.width = `${Math.min(100, urgScore)}%`;
+    valUrgencyScore.textContent = urgScore;
+    valUrgencyLevel.textContent = prio.urgency_level || "Low";
+    barUrgency.style.width = `${Math.min(100, urgScore)}%`;
 
-    // Uncertainty
+    // 4. Uncertainty Score & Level
     const uncScore = prio.uncertainty_score !== undefined ? Math.round(prio.uncertainty_score * 100) : 0;
-    uncertaintyNumber.textContent = uncScore;
-    uncertaintyLevelTag.textContent = prio.uncertainty_level || "Low";
-    uncertaintyBarFill.style.width = `${Math.min(100, uncScore)}%`;
+    valUncertaintyScore.textContent = uncScore;
+    valUncertaintyLevel.textContent = prio.uncertainty_level || "Low";
+    barUncertainty.style.width = `${Math.min(100, uncScore)}%`;
 
-    // Concise Executive Summary
-    const personCount = result.total_detections_found || 0;
-    if (personCount > 0) {
-      situationSummaryText.textContent = `${personCount} potential person${personCount > 1 ? "s" : ""} detected in sector. Terrain accessibility is evaluated as ${scene.inferred_accessibility || "Accessible"}.`;
-    } else {
-      situationSummaryText.textContent = "No potential persons detected. Environmental baseline clear.";
-    }
+    // 5. Hazard & Accessibility Badges
+    const hazard = (scene.inferred_hazard_severity || "NORMAL").toUpperCase();
+    badgeHazard.textContent = hazard;
 
-    // Contributing Factors List
-    factorsList.innerHTML = "";
-    const factors = prio.contributing_factors || [];
-    if (factors.length > 0) {
-      factors.forEach(f => {
-        const div = document.createElement("div");
-        div.className = "factor-bullet";
-        div.textContent = f;
-        factorsList.appendChild(div);
-      });
-    } else {
-      factorsList.innerHTML = '<div class="factor-bullet">Standard aerial surveillance parameters.</div>';
-    }
-  }
-
-  function populateEnvironmentalPanel(scene) {
-    if (!scene) return;
-
-    // Accessibility Pill
     const access = (scene.inferred_accessibility || "ACCESSIBLE").toUpperCase();
-    accessPill.textContent = access;
-    accessPill.className = "access-pill " + (
+    badgeAccess.textContent = access;
+    badgeAccess.className = "status-badge badge-access " + (
       access.includes("BLOCKED") ? "blocked" :
       access.includes("LIMITED") ? "limited" : ""
     );
 
-    // Coverage Bars
+    // 6. Unified Executive Summary
+    if (personCount > 0) {
+      textSituationSummary.textContent = `${personCount} potential person${personCount > 1 ? "s" : ""} detected in surveyed sector. Regional accessibility evaluated as ${access}.`;
+    } else {
+      textSituationSummary.textContent = `No potential persons localized in current reconnaissance frame. Baseline hazard evaluated as ${hazard}.`;
+    }
+
+    // 7. Contributing Factors Accordion
+    factorsList.innerHTML = "";
+    const factors = prio.contributing_factors || [];
+    if (factors.length > 0) {
+      factors.forEach(f => {
+        const li = document.createElement("li");
+        li.textContent = f;
+        factorsList.appendChild(li);
+      });
+    } else {
+      factorsList.innerHTML = "<li>Baseline aerial reconnaissance parameters.</li>";
+    }
+  }
+
+  function updateEnvironmentalPanel(scene) {
+    if (!scene) return;
+
+    // Slim Progress Bars
     const water = scene.water_coverage_pct || 0;
-    envWaterPct.textContent = `${water.toFixed(1)}%`;
-    envWaterBar.style.width = `${Math.min(100, water)}%`;
+    pctWater.textContent = `${water.toFixed(1)}%`;
+    barWater.style.width = `${Math.min(100, water)}%`;
 
     const debris = scene.debris_coverage_pct || 0;
-    envDebrisPct.textContent = `${debris.toFixed(1)}%`;
-    envDebrisBar.style.width = `${Math.min(100, debris)}%`;
+    pctDebris.textContent = `${debris.toFixed(1)}%`;
+    barDebris.style.width = `${Math.min(100, debris)}%`;
 
     const road = scene.road_coverage_pct || 0;
-    envRoadPct.textContent = `${road.toFixed(1)}%`;
-    envRoadBar.style.width = `${Math.min(100, road)}%`;
+    pctRoad.textContent = `${road.toFixed(1)}%`;
+    barRoad.style.width = `${Math.min(100, road)}%`;
 
     const tree = scene.tree_coverage_pct || 0;
-    envTreePct.textContent = `${tree.toFixed(1)}%`;
-    envTreeBar.style.width = `${Math.min(100, tree)}%`;
+    pctTree.textContent = `${tree.toFixed(1)}%`;
+    barTree.style.width = `${Math.min(100, tree)}%`;
 
+    // Building Damage
     const dist = scene.class_distribution_pct || {};
-    const damage = (dist["Building-Damaged"] || 0) + (dist["Building-Destroyed"] || 0);
-    envDamagePct.textContent = `${damage.toFixed(1)}%`;
-    envDamageBar.style.width = `${Math.min(100, damage)}%`;
+    const minor = dist["Building-Minor-Damage"] || 0;
+    const major = dist["Building-Major-Damage"] || 0;
+    const dest = dist["Building-Destroyed"] || 0;
+    const totalDmg = minor + major + dest;
+    valDamagePct.textContent = `${totalDmg.toFixed(1)}%`;
+    damageSubclassesList.innerHTML = `Minor: ${minor.toFixed(1)}% &bull; Major: ${major.toFixed(1)}% &bull; Destroyed: ${dest.toFixed(1)}%`;
 
-    // Inferred Capabilities
-    capabilityPills.innerHTML = "";
+    // Required Capabilities
+    capabilitiesTagsList.innerHTML = "";
     const caps = scene.inferred_required_capabilities || [];
     if (caps.length > 0) {
       caps.forEach(c => {
-        const pill = document.createElement("span");
-        pill.className = "cap-pill";
-        pill.textContent = c.replace(/_/g, " ");
-        capabilityPills.appendChild(pill);
+        const span = document.createElement("span");
+        span.className = "cap-tag";
+        span.textContent = c.replace(/_/g, " ");
+        capabilitiesTagsList.appendChild(span);
       });
     } else {
-      capabilityPills.innerHTML = '<span class="cap-pill-empty">No hazardous capability dependencies</span>';
+      capabilitiesTagsList.innerHTML = '<span class="cap-tag-empty">Standard Response</span>';
     }
   }
 
-  function populateDetectionsPanel(detections) {
-    detectionsTotalTag.textContent = `${detections.length} Person${detections.length === 1 ? "" : "s"}`;
-    listCounterText.textContent = `${detections.length} record${detections.length === 1 ? "" : "s"}`;
+  function updateRecommendationPanel(recOutcome) {
+    if (!recOutcome) return;
+    const recs = recOutcome.recommendations || [];
 
-    detectionsItemsList.innerHTML = "";
-
-    if (detections.length === 0) {
-      detectionsItemsList.innerHTML = '<div class="detection-empty-item">No potential persons detected in current frame.</div>';
-      selectedTrackId.textContent = "No active tracks";
-      selectedTrackStatus.textContent = "Standby";
-      selectedTrackConf.textContent = "\u2014";
-      selectedTrackUncertainty.textContent = "\u2014";
-      selectedTrackCoords.textContent = "\u2014";
+    if (recs.length === 0) {
+      recResourceName.textContent = "No Immediate Suitable Asset";
+      recResourceType.textContent = "Advisory Guidance";
+      recSuitabilityVal.textContent = "\u2014";
+      recMatchedCapability.textContent = "None matched";
+      recDistanceVal.innerHTML = "\u2014";
+      recRationaleText.textContent = recOutcome.rationale || "All recorded emergency resources unsuitable for sector constraints.";
+      btnOpenReviewModal.disabled = true;
       return;
     }
 
-    detections.forEach((det, idx) => {
-      const trackId = det.track_id ? `TRK-${String(det.track_id).padStart(2, "0")}` : `ID-${idx + 1}`;
-      const confPct = `${(det.confidence * 100).toFixed(1)}%`;
+    const r = recs[0];
+    recResourceName.textContent = r.resource_name || "Emergency Response Team";
+    recResourceType.textContent = (r.resource_type || "SAR Unit").replace(/_/g, " ");
 
-      const row = document.createElement("div");
-      row.className = "detection-row-item" + (selectedDetectionIndex === idx ? " selected" : "");
-      row.innerHTML = `
-        <span class="row-track-id">${trackId}</span>
-        <span class="row-conf">${confPct}</span>
-      `;
+    const suit = Math.round(r.suitability_score * 100);
+    recSuitabilityVal.textContent = `${suit}%`;
 
-      row.addEventListener("click", () => {
-        selectDetection(idx);
-      });
+    const caps = r.matched_capabilities || ["Rapid Response"];
+    recMatchedCapability.textContent = caps.join(", ").replace(/_/g, " ");
 
-      detectionsItemsList.appendChild(row);
-    });
+    const dist = r.estimated_distance_meters ? Math.round(r.estimated_distance_meters) : 720;
+    recDistanceVal.innerHTML = `${dist} m <small class="sim-tag">SIMULATED</small>`;
 
-    // Auto-select first detection if none selected
-    if (selectedDetectionIndex === null || selectedDetectionIndex >= detections.length) {
-      selectDetection(0);
-    } else {
-      selectDetection(selectedDetectionIndex);
-    }
+    recRationaleText.textContent = r.rationale || "Highest capability match score with shortest simulated approach distance.";
+    btnOpenReviewModal.disabled = false;
   }
+
+  // --------------------------------------------------------------------------
+  // DETECTION INSPECTION & TRACK CHIPS
+  // --------------------------------------------------------------------------
 
   function selectDetection(idx) {
     if (idx === null || !currentResult || !currentResult.detections || !currentResult.detections[idx]) {
@@ -699,165 +663,90 @@ document.addEventListener("DOMContentLoaded", () => {
     const det = currentResult.detections[idx];
     const trackId = det.track_id ? `TRK-${String(det.track_id).padStart(2, "0")}` : `ID-${idx + 1}`;
 
-    selectedTrackId.textContent = trackId;
-    selectedTrackStatus.textContent = det.review_status || "Pending Review";
-    selectedTrackConf.textContent = `${(det.confidence * 100).toFixed(1)}%`;
-    selectedTrackUncertainty.textContent = `\u00b1 ${(det.uncertainty_radius_meters || 15.0).toFixed(1)} m`;
+    valSelectedTrackId.textContent = trackId;
+    valSelectedConf.textContent = `${(det.confidence * 100).toFixed(0)}% confidence`;
+    valSelectedStatus.textContent = det.review_status || "Pending Review";
+    valSelectedUncertainty.textContent = `\u00b1 ${(det.uncertainty_radius_meters || 15.0).toFixed(1)} m`;
 
     if (det.simulated_lat && det.simulated_lon) {
-      selectedTrackCoords.textContent = `${det.simulated_lat.toFixed(5)}\u00b0 N, ${det.simulated_lon.toFixed(5)}\u00b0 W (Simulated)`;
+      valSelectedCoords.innerHTML = `${det.simulated_lat.toFixed(4)}\u00b0 N, ${det.simulated_lon.toFixed(4)}\u00b0 W <small class="sim-tag">SIMULATED</small>`;
     } else {
-      selectedTrackCoords.textContent = "Simulated projection active";
+      valSelectedCoords.innerHTML = `Simulated projection <small class="sim-tag">ACTIVE</small>`;
     }
 
-    // Update active row classes
-    document.querySelectorAll(".detection-row-item").forEach((r, i) => {
-      r.classList.toggle("selected", i === idx);
-    });
-
-    // Update bottom chips
-    document.querySelectorAll(".track-chip").forEach((chip, i) => {
+    // Update chip styling
+    document.querySelectorAll(".chip-track").forEach((chip, i) => {
       chip.classList.toggle("selected", i === idx);
     });
 
     renderCanvas();
   }
 
-  function populateRecommendationPanel(recOutcome) {
-    if (!recOutcome) return;
-
-    const recs = recOutcome.recommendations || [];
-    if (recs.length === 0) {
-      recResourceName.textContent = "No Suitable Resource";
-      recResourceType.textContent = "Advisory";
-      recSuitabilityVal.textContent = "\u2014";
-      recDistanceVal.textContent = "\u2014";
-      recRationaleText.textContent = recOutcome.rationale || "All simulated resource units currently committed or unsuitable for sector constraints.";
-      btnReviewRecommendation.disabled = true;
+  function updateTrackChips(detections) {
+    trackChipsList.innerHTML = "";
+    if (detections.length === 0) {
+      valSelectedTrackId.textContent = "None";
+      valSelectedConf.textContent = "";
+      valSelectedCoords.innerHTML = "&mdash;";
+      valSelectedUncertainty.textContent = "";
       return;
     }
 
-    const primaryRec = recs[0];
-    recResourceName.textContent = primaryRec.resource_name || "Emergency Resource Team";
-    recResourceType.textContent = (primaryRec.resource_type || "SAR Team").replace(/_/g, " ");
-
-    const suit = Math.round(primaryRec.suitability_score * 100);
-    recSuitabilityVal.textContent = `${suit}%`;
-    recDistanceVal.textContent = primaryRec.estimated_distance_meters 
-      ? `${Math.round(primaryRec.estimated_distance_meters)} m` 
-      : "720 m (Est.)";
-
-    recReviewStatus.textContent = primaryRec.status || "Pending Review";
-    recRationaleText.textContent = primaryRec.rationale || "Optimal match based on capability coverage and shortest simulated approach corridor.";
-
-    recCapabilitiesList.innerHTML = "";
-    const caps = primaryRec.matched_capabilities || ["Rapid Response"];
-    caps.forEach(c => {
-      const tag = document.createElement("span");
-      tag.className = "cap-tag-pill";
-      tag.textContent = c.replace(/_/g, " ");
-      recCapabilitiesList.appendChild(tag);
+    detections.forEach((det, idx) => {
+      const trackId = det.track_id ? `TRK-${String(det.track_id).padStart(2, "0")}` : `ID-${idx + 1}`;
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip-track" + (selectedDetectionIndex === idx ? " selected" : "");
+      chip.textContent = trackId;
+      chip.addEventListener("click", () => selectDetection(idx));
+      trackChipsList.appendChild(chip);
     });
 
-    btnReviewRecommendation.disabled = false;
-  }
-
-  // --------------------------------------------------------------------------
-  // BOTTOM ANALYTICS & TIMELINE REGION
-  // --------------------------------------------------------------------------
-
-  function populateBottomAnalytics(result, durationMs) {
-    const tracks = result.detections || [];
-    metricTracks.textContent = `Active Tracks: ${tracks.length}`;
-    metricFrameStatus.textContent = `Sortie 001 \u2022 ${tracks.length} entities`;
-
-    trackChipsScroll.innerHTML = "";
-    if (tracks.length === 0) {
-      timelineEmptyHint.style.display = "block";
-    } else {
-      timelineEmptyHint.style.display = "none";
-      tracks.forEach((det, idx) => {
-        const trackId = det.track_id ? `TRK-${String(det.track_id).padStart(2, "0")}` : `ID-${idx + 1}`;
-        const confPct = `${(det.confidence * 100).toFixed(0)}%`;
-
-        const chip = document.createElement("div");
-        chip.className = "track-chip" + (selectedDetectionIndex === idx ? " selected" : "");
-        chip.innerHTML = `
-          <span class="chip-track-id">${trackId}</span>
-          <span class="chip-conf">${confPct}</span>
-          <span class="chip-coords">\u00b1${(det.uncertainty_radius_meters || 15).toFixed(0)}m</span>
-        `;
-        chip.addEventListener("click", () => selectDetection(idx));
-        trackChipsScroll.appendChild(chip);
-      });
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  // SIMULATED GEO MAP VIEW
-  // --------------------------------------------------------------------------
-
-  function switchView(mode) {
-    if (mode === "sensor") {
-      btnViewSensor.classList.add("active");
-      btnViewMap.classList.remove("active");
-      canvasWrapper.style.display = "flex";
-      geoMapView.style.display = "none";
-    } else {
-      btnViewSensor.classList.remove("active");
-      btnViewMap.classList.add("active");
-      canvasWrapper.style.display = "none";
-      geoMapView.style.display = "flex";
+    if (selectedDetectionIndex === null || selectedDetectionIndex >= detections.length) {
+      selectDetection(0);
     }
   }
 
   function updateGeoMap(detections) {
-    geoDetectionsGroup.innerHTML = "";
+    geoMarkersLayer.innerHTML = "";
     detections.forEach((det, idx) => {
-      // Map pixel coordinates inside 800x500 SVG
-      const cx = 320 + (idx * 45);
-      const cy = 200 + (idx * 25);
-      const rUncertainty = 30;
+      const cx = 250 + (idx * 35);
+      const cy = 160 + (idx * 20);
 
-      // Group
       const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-      // Uncertainty circle
       const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       circ.setAttribute("cx", cx);
       circ.setAttribute("cy", cy);
-      circ.setAttribute("r", rUncertainty);
+      circ.setAttribute("r", "20");
       circ.setAttribute("fill", "#EFF6FF");
       circ.setAttribute("stroke", "#3B82F6");
       circ.setAttribute("stroke-width", "1");
-      circ.setAttribute("stroke-dasharray", "3 3");
-      circ.setAttribute("opacity", "0.7");
+      circ.setAttribute("stroke-dasharray", "2 2");
       g.appendChild(circ);
 
-      // Person marker dot
       const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       dot.setAttribute("cx", cx);
       dot.setAttribute("cy", cy);
-      dot.setAttribute("r", "5");
+      dot.setAttribute("r", "4");
       dot.setAttribute("fill", "#2563EB");
       g.appendChild(dot);
 
-      // Label
-      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      txt.setAttribute("x", cx + 8);
-      txt.setAttribute("y", cy + 4);
-      txt.setAttribute("font-size", "10");
-      txt.setAttribute("font-weight", "600");
-      txt.setAttribute("fill", "#1E40AF");
-      txt.textContent = det.track_id ? `TRK-${det.track_id}` : `ID-${idx + 1}`;
-      g.appendChild(txt);
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", cx + 7);
+      text.setAttribute("y", cy + 3);
+      text.setAttribute("font-size", "9");
+      text.setAttribute("font-weight", "600");
+      text.setAttribute("fill", "#1E40AF");
+      text.textContent = det.track_id ? `TRK-${det.track_id}` : `ID-${idx + 1}`;
+      g.appendChild(text);
 
-      geoDetectionsGroup.appendChild(g);
+      geoMarkersLayer.appendChild(g);
     });
   }
 
   // --------------------------------------------------------------------------
-  // MODAL DIALOGS
+  // MODALS & DIAGNOSTICS
   // --------------------------------------------------------------------------
 
   function populateReviewModal() {
@@ -866,78 +755,64 @@ document.addEventListener("DOMContentLoaded", () => {
     if (recs.length === 0) return;
 
     const r = recs[0];
-    reviewDialogContent.innerHTML = `
-      <div style="font-size:13px;line-height:1.6;color:#334155;">
+    reviewModalBody.innerHTML = `
+      <div style="font-size:12px;line-height:1.6;color:#334155;">
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:12px;margin-bottom:12px;">
-          <div style="font-size:11px;color:#64748B;text-transform:uppercase;font-weight:600;">Resource Candidate</div>
+          <div style="font-size:10px;color:#64748B;text-transform:uppercase;font-weight:700;">Proposed Resource</div>
           <div style="font-size:15px;font-weight:600;color:#0F172A;">${r.resource_name}</div>
-          <div style="font-size:12px;color:#475569;">Type: ${r.resource_type} &bull; Estimated Transit: ${Math.round(r.estimated_distance_meters || 720)}m</div>
+          <div style="font-size:11px;color:#475569;">Type: ${r.resource_type} &bull; Distance: ${Math.round(r.estimated_distance_meters || 720)}m (Simulated)</div>
         </div>
-
-        <p style="margin-bottom:8px;"><strong>Rationale:</strong> ${r.rationale || 'Matched against sector constraints.'}</p>
-        
-        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:10px;margin-top:12px;font-size:11px;color:#92400E;">
-          <strong>Human-in-the-Loop Gate:</strong> Autonomous resource dispatch is strictly blocked. Signing off records confirmation that an operational coordinator has reviewed the advisory recommendation.
+        <p style="margin-bottom:8px;"><strong>Rationale:</strong> ${r.rationale || 'Optimal match based on current environmental capabilities.'}</p>
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:4px;padding:8px;font-size:11px;color:#92400E;">
+          <strong>Human Authorization Gate:</strong> Autonomous dispatch is disabled. Confirming this action logs human coordinator verification.
         </div>
       </div>
     `;
   }
 
-  // --------------------------------------------------------------------------
-  // HEALTH & TELEMETRY
-  // --------------------------------------------------------------------------
+  function renderHistoryList() {
+    historyList.innerHTML = "";
+    if (sessionHistory.length === 0) {
+      historyList.innerHTML = '<div class="history-empty-text">No prior sorties recorded in this session.</div>';
+      return;
+    }
+
+    sessionHistory.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "history-item";
+      row.innerHTML = `
+        <div>
+          <strong>${item.filename}</strong>
+          <div style="font-size:11px;color:#64748B;">${item.timestamp} &bull; ${item.personsCount} potential persons &bull; Priority: ${item.priority}</div>
+        </div>
+      `;
+      historyList.appendChild(row);
+    });
+  }
 
   async function fetchSystemHealth() {
     try {
       const res = await fetch("/health");
       if (res.ok) {
         const data = await res.json();
-        systemStatusPill.querySelector(".status-text").textContent = "System ready";
+        diagStatus.textContent = data.status || "Operational";
       }
     } catch (err) {
-      systemStatusPill.querySelector(".status-dot-mini").className = "status-dot-mini amber";
-      systemStatusPill.querySelector(".status-text").textContent = "Connecting...";
+      diagStatus.textContent = "Offline";
     }
   }
 
   function updateTelemetry(deviceInfo) {
     if (!deviceInfo) return;
-    if (deviceInfo.cuda_available) {
-      deviceInfoText.textContent = `${deviceInfo.gpu_name || "RTX 2050"} \u2022 CUDA`;
-    } else {
-      deviceInfoText.textContent = "CPU Fallback";
-    }
+    diagDevice.textContent = deviceInfo.inference_device || "CUDA:0";
+    diagGpu.textContent = deviceInfo.gpu_name || "NVIDIA GeForce RTX 2050";
+    diagCuda.textContent = String(deviceInfo.cuda_available);
   }
 
-  function resetPanelsToAwaitingState() {
-    toolbarPersonCount.textContent = "0";
-    headerPriorityBadge.textContent = "Standby";
-    headerPriorityBadge.className = "priority-badge-compact";
-    situationHazardTag.textContent = "Normal";
-    urgencyNumber.textContent = "0";
-    urgencyBarFill.style.width = "0%";
-    uncertaintyNumber.textContent = "0";
-    uncertaintyBarFill.style.width = "0%";
-    situationSummaryText.textContent = "Media loaded. Click 'Run Assessment' to perform dual-model analysis.";
-    factorsList.innerHTML = '<div class="factor-bullet">Awaiting model execution.</div>';
-    accessPill.textContent = "Accessible";
-    accessPill.className = "access-pill";
-    capabilityPills.innerHTML = '<span class="cap-pill-empty">Pending assessment</span>';
-    btnReviewRecommendation.disabled = true;
-  }
-
-  function setStepState(stepId, state) {
+  function setLoadingStep(stepId, isActive) {
     const el = document.getElementById(stepId);
     if (!el) return;
-    const ind = el.querySelector(".step-indicator");
-    ind.className = `step-indicator ${state}`;
-    if (state === "done") {
-      ind.innerHTML = "&check;";
-    } else if (state === "active") {
-      ind.innerHTML = "&bull;";
-    } else {
-      ind.innerHTML = "&bull;";
-    }
+    el.className = isActive ? "step-row active" : "step-row done";
   }
 
   function showLoading(show) {
@@ -946,13 +821,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showToast(message, type = "info") {
     const toast = document.createElement("div");
-    toast.className = `toast-msg ${type}`;
+    toast.className = `toast-item ${type}`;
     toast.textContent = message;
     toastCenter.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = "0";
-      setTimeout(() => toast.remove(), 250);
-    }, 3800);
+      setTimeout(() => toast.remove(), 200);
+    }, 3200);
   }
 
   function roundRect(ctx, x, y, width, height, radius) {
@@ -969,13 +844,12 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.closePath();
   }
 
-  function createSyntheticSampleRecon() {
+  function createSyntheticSample() {
     const offCanvas = document.createElement("canvas");
     offCanvas.width = 1024;
     offCanvas.height = 768;
     const offCtx = offCanvas.getContext("2d");
 
-    // Tactical aerial scenery
     const grad = offCtx.createLinearGradient(0, 0, 1024, 768);
     grad.addColorStop(0, "#2B3A4A");
     grad.addColorStop(0.5, "#4B5563");
@@ -990,11 +864,11 @@ document.addEventListener("DOMContentLoaded", () => {
     offCanvas.toBlob((blob) => {
       const file = new File([blob], "visdrone_val_sample.jpg", { type: "image/jpeg" });
       handleFileSelected(file);
-      showToast("Generated synthetic aerial frame for demonstration", "info");
+      showToast("Generated synthetic reconnaissance frame for demonstration", "info");
     }, "image/jpeg");
   }
 
-  // Expose key functions for testing & integration
+  // Window exposures for test scripts
   window.drawBoundingBoxes = drawBoundingBoxes;
   window.executeMultimodalAnalysis = executeMultimodalAnalysis;
 });
