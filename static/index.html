@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster UAV Command Center — Operational Monitoring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- App Shell -->
+  <div class="app-shell">
+    
+    <!-- Left Navigation Rail -->
+    <aside class="nav-rail" aria-label="Main Navigation">
+      <div class="nav-rail-top">
+        <a href="#" class="brand-mark" title="Disaster UAV Command Center" aria-label="Home">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 19 8 19 16 12 22 5 16 5 8 12 2"></polygon>
+            <line x1="12" y1="22" x2="12" y2="15.5"></line>
+            <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+            <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+          </svg>
+        </a>
+
+        <nav class="nav-items-group" role="navigation">
+          <button class="nav-item active" id="nav-monitor" title="Monitor (Live Aerial Feed)" aria-label="Monitor" aria-current="page">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            <span class="nav-tooltip">Monitor</span>
+          </button>
+
+          <button class="nav-item" id="nav-incidents" title="Incidents & Sectors" aria-label="Incidents">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span class="nav-tooltip">Incidents</span>
+          </button>
+
+          <button class="nav-item" id="nav-detections" title="Detections & Tracks" aria-label="Detections">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span class="nav-tooltip">Detections</span>
+          </button>
+
+          <button class="nav-item" id="nav-resources" title="Resource Recommendations" aria-label="Resources">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+              <circle cx="5.5" cy="18.5" r="2.5"></circle>
+              <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+            <span class="nav-tooltip">Resources</span>
+          </button>
+
+          <button class="nav-item" id="nav-history" title="Mission History" aria-label="History">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="nav-tooltip">History</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="nav-rail-bottom">
+        <button class="nav-item" id="nav-safety" title="Safety Protocol & Data Separation" aria-label="Safety Protocol">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span class="nav-tooltip">Safety Notice</span>
+        </button>
+
+        <button class="nav-item" id="nav-settings" title="System Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="nav-tooltip">Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Application Column -->
+    <div class="app-main-layout">
+      
+      <!-- Top Minimal Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <span class="header-brand-title">Disaster UAV Command Center</span>
+          <span class="header-sep">/</span>
+          <span class="header-current-view">Monitoring</span>
+        </div>
+
+        <div class="header-center">
+          <div class="operation-selector" id="operation-selector">
+            <span class="status-indicator-dot online"></span>
+            <span class="operation-name">Sector Reconnaissance — Active Sortie</span>
+            <span class="operation-badge">Grid Delta-4</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Compact System Status -->
+          <div class="status-pill" id="system-status-pill" title="Backend operational status">
+            <span class="status-dot-mini green"></span>
+            <span class="status-text">System ready</span>
+          </div>
+
+          <!-- Hardware Device Info -->
+          <div class="hardware-pill" id="cuda-status-pill" title="Hardware acceleration device">
+            <span class="hw-icon">GPU</span>
+            <span id="device-info-text">RTX 2050 &bull; CUDA</span>
+          </div>
+
+          <!-- Safety Gate Badge -->
+          <div class="safety-pill" title="Project safety constitution active">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Advisory Mode</span>
+          </div>
+
+          <!-- Upload Action -->
+          <label for="image-upload-input" class="btn btn-secondary btn-sm" id="header-upload-btn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Upload Media</span>
+          </label>
+          <input type="file" id="image-upload-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+
+          <!-- Operator Avatar -->
+          <div class="operator-profile" title="Operator: Emergency Coordinator">
+            <span class="avatar-text">OP</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Workspace Body: Dominant Visual Workspace + Right Context Panel -->
+      <div class="workspace-container">
+        
+        <!-- Center Monitoring Workspace -->
+        <main class="monitoring-workspace" role="main">
+          
+          <!-- Workspace Subheader / Viewport Bar -->
+          <div class="workspace-subbar">
+            <div class="subbar-left">
+              <span class="media-title" id="loaded-filename">Awaiting aerial input media</span>
+              <span class="media-meta-badge" id="media-meta-badge">1024 &times; 768 px</span>
+            </div>
+
+            <div class="subbar-right">
+              <!-- View Switcher (Sensor vs Simulated Geo Map) -->
+              <div class="view-switch-group" role="tablist">
+                <button type="button" class="view-switch-btn active" id="btn-view-sensor" role="tab" aria-selected="true">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>Sensor View</span>
+                </button>
+                <button type="button" class="view-switch-btn" id="btn-view-map" role="tab" aria-selected="false">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                    <line x1="8" y1="2" x2="8" y2="18"></line>
+                    <line x1="16" y1="6" x2="16" y2="22"></line>
+                  </svg>
+                  <span>Geo View <span class="tag-subtle">Simulated</span></span>
+                </button>
+              </div>
+
+              <!-- Quick action: Load sample -->
+              <button type="button" class="btn btn-ghost btn-sm" id="load-sample-btn" title="Load real VisDrone validation reconnaissance frame">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                  <polyline points="16 6 12 2 8 6"></polyline>
+                  <line x1="12" y1="2" x2="12" y2="15"></line>
+                </svg>
+                <span>Load Sample Recon</span>
+              </button>
+
+              <button type="button" class="btn btn-primary btn-sm" id="analyze-btn" disabled>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span>Run Assessment</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Viewport Canvas & Container -->
+          <div class="viewport-canvas-container" id="viewport-container">
+            
+            <!-- Floating Clean Control Toolbar -->
+            <div class="floating-controls-bar" id="floating-toolbar">
+              <!-- Detection Toggle -->
+              <label class="control-pill" title="Toggle YOLO Person Bounding Boxes">
+                <input type="checkbox" id="toggle-yolo" checked>
+                <span class="control-dot dot-person"></span>
+                <span class="control-text">Person Detections</span>
+                <span class="count-pill" id="toolbar-person-count">0</span>
+              </label>
+
+              <!-- Segmentation Toggle -->
+              <label class="control-pill" title="Toggle RescueNet Environmental Segmentation Overlay">
+                <input type="checkbox" id="toggle-seg" checked>
+                <span class="control-dot dot-environment"></span>
+                <span class="control-text">Environmental Overlay</span>
+              </label>
+
+              <div class="control-divider"></div>
+
+              <!-- Confidence Slider -->
+              <div class="control-slider-group" title="YOLO Confidence Threshold Filter">
+                <span class="slider-caption">Threshold:</span>
+                <input type="range" id="conf-slider" min="0.10" max="0.90" step="0.05" value="0.25">
+                <span class="slider-value" id="conf-val">0.25</span>
+              </div>
+
+              <div class="control-divider"></div>
+
+              <!-- Zoom / Reset Controls -->
+              <div class="control-btn-group">
+                <button type="button" class="tool-btn" id="btn-zoom-fit" title="Fit to viewport">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                  </svg>
+                </button>
+                <button type="button" class="tool-btn" id="btn-fullscreen" title="Toggle fullscreen view">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <polyline points="9 21 3 21 3 15"></polyline>
+                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State Display -->
+            <div class="empty-state-view" id="empty-state">
+              <div class="empty-state-card">
+                <div class="empty-illustration">
+                  <svg viewBox="0 0 64 64" width="56" height="56" fill="none" stroke="#2563EB" stroke-width="1.8">
+                    <circle cx="32" cy="32" r="28" stroke="#E2E8F0" stroke-width="2"></circle>
+                    <path d="M32 16v32M16 32h32" stroke="#CBD5E1"></path>
+                    <circle cx="32" cy="32" r="14" stroke-dasharray="3 3"></circle>
+                    <polygon points="32 10 38 18 26 18"></polygon>
+                    <polygon points="54 32 46 38 46 26"></polygon>
+                    <polygon points="32 54 26 46 38 46"></polygon>
+                    <polygon points="10 32 18 26 18 38"></polygon>
+                    <circle cx="32" cy="32" r="3" fill="#2563EB"></circle>
+                  </svg>
+                </div>
+                <h2 class="empty-title">UAV Monitoring Console</h2>
+                <p class="empty-description">
+                  Upload an aerial UAV image or frame to begin real-time multimodal disaster assessment.
+                </p>
+                <div class="empty-actions">
+                  <label for="image-upload-input" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Upload Aerial Media</span>
+                  </label>
+                  <button type="button" class="btn btn-secondary" id="empty-load-sample-btn">
+                    <span>Load VisDrone Sample</span>
+                  </button>
+                </div>
+                <p class="empty-footer-hint">
+                  Supports VisDrone aerial imagery and standard JPEG/PNG frames. Local CUDA acceleration enabled.
+                </p>
+              </div>
+            </div>
+
+            <!-- Sensor Canvas (Dominant Visual) -->
+            <div class="canvas-viewport-wrapper" id="canvas-wrapper">
+              <canvas id="uav-canvas" style="display:none;"></canvas>
+              <!-- Interactive Tooltip on hover/click -->
+              <div id="detection-tooltip" class="detection-popover" style="display:none;"></div>
+            </div>
+
+            <!-- Simulated Geo Map View -->
+            <div id="geo-map-view" class="geo-map-view" style="display:none;">
+              <div class="geo-map-canvas-container">
+                <svg id="geo-map-svg" viewBox="0 0 800 500" width="100%" height="100%">
+                  <!-- Background grid -->
+                  <defs>
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E2E8F0" stroke-width="1"></path>
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="#F8FAFC"></rect>
+                  <rect width="100%" height="100%" fill="url(#grid)"></rect>
+
+                  <!-- Simulated terrain & hazards -->
+                  <path d="M 50,450 Q 200,320 400,350 T 750,250 L 800,500 L 0,500 Z" fill="#E0F2FE" opacity="0.6"></path>
+                  <text x="680" y="470" fill="#0284C7" font-size="11" font-weight="600">Simulated Flood Zone</text>
+
+                  <!-- Debris cluster -->
+                  <rect x="220" y="160" width="180" height="110" rx="6" fill="#FEF3C7" opacity="0.5" stroke="#FDE68A" stroke-dasharray="3 3"></rect>
+                  <text x="230" y="180" fill="#D97706" font-size="10" font-weight="600">Debris Sector</text>
+
+                  <!-- UAV Trajectory & Footprint -->
+                  <circle cx="340" cy="220" r="140" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4"></circle>
+                  <polygon points="340,205 348,225 340,220 332,225" fill="#2563EB"></polygon>
+                  <text x="355" y="224" fill="#1E40AF" font-size="11" font-weight="600">UAV Sortie Alpha-7</text>
+
+                  <!-- Simulated Emergency Station / Resource -->
+                  <g id="geo-resource-marker" transform="translate(620, 110)">
+                    <rect x="-10" y="-10" width="20" height="20" rx="4" fill="#059669"></rect>
+                    <path d="M -4,0 L 4,0 M 0,-4 L 0,4" stroke="#FFF" stroke-width="2"></path>
+                    <text x="16" y="4" fill="#065F46" font-size="11" font-weight="600">SAR Team Alpha (722m)</text>
+                  </g>
+
+                  <!-- Dynamic Detections Group -->
+                  <g id="geo-detections-group"></g>
+                </svg>
+                <div class="geo-watermark">SIMULATED GEOLOCATION &bull; ESTIMATED PROJECTION</div>
+              </div>
+            </div>
+
+            <!-- In-scene Processing State (Calm & Non-disruptive) -->
+            <div class="processing-overlay" id="loading-overlay" style="display:none;">
+              <div class="processing-card">
+                <div class="spinner-ring"></div>
+                <h3 class="processing-title">Analyzing Scene</h3>
+                <p class="processing-subtitle">Running dual-model multimodal pipeline on RTX 2050</p>
+                <div class="processing-stepper">
+                  <div class="step-line" id="step-upload">
+                    <span class="step-indicator done">&check;</span>
+                    <span class="step-label">Media Ingestion</span>
+                  </div>
+                  <div class="step-line" id="step-yolo">
+                    <span class="step-indicator active">&bull;</span>
+                    <span class="step-label">VisDrone Person Detection</span>
+                  </div>
+                  <div class="step-line" id="step-seg">
+                    <span class="step-indicator queued">&bull;</span>
+                    <span class="step-label">RescueNet Scene Segmentation</span>
+                  </div>
+                  <div class="step-line" id="step-prio">
+                    <span class="step-indicator queued">&bull;</span>
+                    <span class="step-label">Risk Priority &amp; Resource Matching</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Safety Notice (Always Visible but Restrained) -->
+            <div class="floating-safety-banner" id="floating-safety-banner">
+              <div class="safety-content">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#D97706" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span class="safety-text">
+                  <strong>Safety Notice:</strong> Potential-person detections only &bull; Coordinates simulated &bull; Advisory recommendations require human authorization
+                </span>
+              </div>
+              <button type="button" class="btn-link" id="btn-open-safety-details">View Details</button>
+            </div>
+
+          </div>
+
+          <!-- Bottom Analytics / Timeline Workspace -->
+          <section class="bottom-analytics-bar" id="bottom-analytics-bar">
+            <div class="analytics-header">
+              <div class="analytics-title-group">
+                <button type="button" class="btn-collapse-toggle" id="btn-toggle-analytics" aria-label="Toggle analytics panel">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <span class="analytics-title">Analysis Timeline &amp; Track Activity</span>
+              </div>
+
+              <div class="analytics-quick-metrics">
+                <span class="metric-chip" id="metric-frame-status">Frame: 001 / Single Recon</span>
+                <span class="metric-chip" id="metric-latency">Inference: &mdash;</span>
+                <span class="metric-chip" id="metric-tracks">Active Tracks: 0</span>
+              </div>
+            </div>
+
+            <div class="analytics-content-body" id="analytics-body">
+              <div class="timeline-strip" id="timeline-strip">
+                <div class="timeline-empty-hint" id="timeline-empty-hint">
+                  No active detections or timeline events recorded. Ingest media to populate track history.
+                </div>
+                <!-- Interactive Track Chips Rendered Here -->
+                <div class="track-chips-scroll" id="track-chips-scroll"></div>
+              </div>
+            </div>
+          </section>
+
+        </main>
+
+        <!-- Right Contextual Inspection Panel (4 Concise Collapsible Sections) -->
+        <aside class="context-panel" id="context-panel" aria-label="Contextual Inspection Panel">
+          
+          <div class="context-panel-header">
+            <div class="panel-heading-group">
+              <h2 class="context-title">Contextual Inspection</h2>
+              <span class="priority-badge-compact" id="header-priority-badge">Standby</span>
+            </div>
+            <button type="button" class="btn-icon-subtle" id="btn-collapse-all-sections" title="Expand/Collapse Sections">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <div class="context-sections-list">
+
+            <!-- Section 1: Situation & Risk -->
+            <section class="context-section" id="section-situation">
+              <button type="button" class="section-header-btn" aria-expanded="true" data-target="content-situation">
+                <span class="section-title">Situation &amp; Risk</span>
+                <div class="header-badges">
+                  <span class="status-tag" id="situation-hazard-tag">Normal</span>
+                  <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </button>
+
+              <div class="section-content" id="content-situation">
+                <!-- Priority & Urgency Score Cards -->
+                <div class="score-cards-row">
+                  <div class="score-card">
+                    <div class="score-header">
+                      <span class="score-name">Urgency</span>
+                      <span class="score-level" id="urgency-level-tag">Low</span>
+                    </div>
+                    <div class="score-value-row">
+                      <span class="score-number" id="urgency-number">0</span>
+                      <span class="score-max">/ 100</span>
+                    </div>
+                    <div class="progress-bar-track">
+                      <div class="progress-bar-fill fill-urgency" id="urgency-bar-fill" style="width: 0%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="score-card">
+                    <div class="score-header">
+                      <span class="score-name">Uncertainty</span>
+                      <span class="score-level" id="uncertainty-level-tag">Low</span>
+                    </div>
+                    <div class="score-value-row">
+                      <span class="score-number" id="uncertainty-number">0</span>
+                      <span class="score-max">/ 100</span>
+                    </div>
+                    <div class="progress-bar-track">
+                      <div class="progress-bar-fill fill-uncertainty" id="uncertainty-bar-fill" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Executive Summary Sentence -->
+                <div class="situation-summary-card" id="situation-summary-card">
+                  <p class="summary-text" id="situation-summary-text">
+                    Awaiting image ingestion to evaluate environmental hazards and potential persons.
+                  </p>
+                </div>
+
+                <!-- Contributing Factors Dropdown -->
+                <div class="contributing-factors-container">
+                  <button type="button" class="btn-text-expander" id="btn-toggle-factors" aria-expanded="false">
+                    <span>View contributing factors</span>
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="factors-collapsible-list" id="factors-list" style="display:none;">
+                    <div class="factor-empty">No active factors.</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 2: Environmental Context (RescueNet) -->
+            <section class="context-section" id="section-environment">
+              <button type="button" class="section-header-btn" aria-expanded="true" data-target="content-environment">
+                <span class="section-title">Environmental Context</span>
+                <div class="header-badges">
+                  <span class="access-pill" id="access-pill">Accessible</span>
+                  <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </button>
+
+              <div class="section-content" id="content-environment">
+                <div class="env-bars-list">
+                  
+                  <div class="env-bar-row">
+                    <div class="env-bar-meta">
+                      <span class="class-dot dot-water"></span>
+                      <span class="class-title">Water &amp; Flooding</span>
+                      <span class="class-pct" id="env-water-pct">0.0%</span>
+                    </div>
+                    <div class="env-track"><div class="env-fill fill-water" id="env-water-bar" style="width: 0%;"></div></div>
+                  </div>
+
+                  <div class="env-bar-row">
+                    <div class="env-bar-meta">
+                      <span class="class-dot dot-debris"></span>
+                      <span class="class-title">Debris &amp; Rubble</span>
+                      <span class="class-pct" id="env-debris-pct">0.0%</span>
+                    </div>
+                    <div class="env-track"><div class="env-fill fill-debris" id="env-debris-bar" style="width: 0%;"></div></div>
+                  </div>
+
+                  <div class="env-bar-row">
+                    <div class="env-bar-meta">
+                      <span class="class-dot dot-road"></span>
+                      <span class="class-title">Road Infrastructure</span>
+                      <span class="class-pct" id="env-road-pct">0.0%</span>
+                    </div>
+                    <div class="env-track"><div class="env-fill fill-road" id="env-road-bar" style="width: 0%;"></div></div>
+                  </div>
+
+                  <div class="env-bar-row">
+                    <div class="env-bar-meta">
+                      <span class="class-dot dot-tree"></span>
+                      <span class="class-title">Trees &amp; Vegetation</span>
+                      <span class="class-pct" id="env-tree-pct">0.0%</span>
+                    </div>
+                    <div class="env-track"><div class="env-fill fill-tree" id="env-tree-bar" style="width: 0%;"></div></div>
+                  </div>
+
+                  <div class="env-bar-row">
+                    <div class="env-bar-meta">
+                      <span class="class-dot dot-damage"></span>
+                      <span class="class-title">Building Damage</span>
+                      <span class="class-pct" id="env-damage-pct">0.0%</span>
+                    </div>
+                    <div class="env-track"><div class="env-fill fill-damage" id="env-damage-bar" style="width: 0%;"></div></div>
+                  </div>
+
+                </div>
+
+                <!-- Inferred Capabilities Section -->
+                <div class="capabilities-wrapper">
+                  <span class="meta-label">Inferred Capabilities Required:</span>
+                  <div class="capability-pills" id="capability-pills">
+                    <span class="cap-pill-empty">Pending assessment</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 3: Detection / Selected Track -->
+            <section class="context-section" id="section-detections">
+              <button type="button" class="section-header-btn" aria-expanded="true" data-target="content-detections">
+                <span class="section-title">Detections &amp; Selected Track</span>
+                <div class="header-badges">
+                  <span class="count-tag" id="detections-total-tag">0 Persons</span>
+                  <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </button>
+
+              <div class="section-content" id="content-detections">
+                <!-- Selected Track Details Card -->
+                <div class="selected-track-card" id="selected-track-card">
+                  <div class="track-header-row">
+                    <div class="track-id-badge" id="selected-track-id">Select a track</div>
+                    <span class="track-status-pill" id="selected-track-status">Pending Review</span>
+                  </div>
+
+                  <div class="track-fields-grid">
+                    <div class="track-field">
+                      <span class="field-label">Confidence:</span>
+                      <span class="field-value" id="selected-track-conf">&mdash;</span>
+                    </div>
+                    <div class="track-field">
+                      <span class="field-label">Uncertainty Radius:</span>
+                      <span class="field-value" id="selected-track-uncertainty">&mdash;</span>
+                    </div>
+                    <div class="track-field field-span-2">
+                      <span class="field-label">Simulated Coordinates:</span>
+                      <span class="field-value code" id="selected-track-coords">&mdash;</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detections List -->
+                <div class="detections-list-container">
+                  <div class="detections-list-header">
+                    <span class="list-subtitle">All Detected Entities</span>
+                    <span class="list-counter" id="list-counter-text">0 items</span>
+                  </div>
+                  <div class="detections-items-scroll" id="detections-items-list">
+                    <div class="detection-empty-item">No detections recorded in current frame.</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section 4: Recommended Response -->
+            <section class="context-section" id="section-recommendation">
+              <button type="button" class="section-header-btn" aria-expanded="true" data-target="content-recommendation">
+                <span class="section-title">Recommended Response</span>
+                <div class="header-badges">
+                  <span class="advisory-tag">Advisory</span>
+                  <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </button>
+
+              <div class="section-content" id="content-recommendation">
+                <div class="recommendation-card" id="recommendation-card">
+                  
+                  <div class="rec-top-row">
+                    <div class="rec-name-group">
+                      <h4 class="rec-title" id="rec-resource-name">Awaiting Assessment</h4>
+                      <span class="rec-type-badge" id="rec-resource-type">Decision Support</span>
+                    </div>
+                    <div class="rec-suitability-gauge">
+                      <span class="suitability-label">Suitability</span>
+                      <span class="suitability-val" id="rec-suitability-val">&mdash;</span>
+                    </div>
+                  </div>
+
+                  <div class="rec-specs-grid">
+                    <div class="rec-spec">
+                      <span class="spec-label">Estimated Distance:</span>
+                      <span class="spec-val" id="rec-distance-val">&mdash;</span>
+                    </div>
+                    <div class="rec-spec">
+                      <span class="spec-label">Review Status:</span>
+                      <span class="spec-val tag-pending" id="rec-review-status">Pending Review</span>
+                    </div>
+                  </div>
+
+                  <div class="rec-capabilities-block">
+                    <span class="spec-label">Matched Capabilities:</span>
+                    <div class="rec-cap-tags" id="rec-capabilities-list">
+                      <span class="cap-tag-subtle">None matched</span>
+                    </div>
+                  </div>
+
+                  <div class="rec-rationale-block">
+                    <span class="spec-label">System Rationale:</span>
+                    <p class="rec-rationale-text" id="rec-rationale-text">
+                      No automated recommendation generated yet. Ingest aerial imagery to match available rescue capabilities against identified hazards.
+                    </p>
+                  </div>
+
+                  <div class="human-auth-notice">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#D97706" stroke-width="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>Human authorization required. Autonomous dispatch is disabled.</span>
+                  </div>
+
+                  <button type="button" class="btn btn-primary btn-block" id="btn-review-recommendation" disabled>
+                    Review Recommendation
+                  </button>
+
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Safety Protocol & Full Disclaimer Modal -->
+  <div class="modal-backdrop" id="safety-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="safety-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="safety-modal-title">Safety Protocol &amp; Prototype Operational Boundaries</h3>
+        <button type="button" class="btn-close" id="btn-close-safety-modal" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="disclaimer-bullet">
+          <span class="bullet-num">1</span>
+          <div>
+            <strong>Potential Persons Only:</strong>
+            <p>Visual detections generated by the YOLOv8 model represent <em>potential persons</em> or figures detected in aerial imagery. They do NOT confirm survivor status, biological viability, or medical condition.</p>
+          </div>
+        </div>
+
+        <div class="disclaimer-bullet">
+          <span class="bullet-num">2</span>
+          <div>
+            <strong>Simulated Geolocation:</strong>
+            <p>All latitude, longitude, and distance coordinates presented in this prototype are calculated from <em>simulated camera projection geometry</em>. They do not constitute operational GPS fixes.</p>
+          </div>
+        </div>
+
+        <div class="disclaimer-bullet">
+          <span class="bullet-num">3</span>
+          <div>
+            <strong>Advisory Recommendations &amp; Human Authorization:</strong>
+            <p>Resource recommendations are decision-support heuristics designed to assist emergency coordinators. Autonomous dispatch is strictly disabled by system policy; any operational resource deployment requires explicit human authorization.</p>
+          </div>
+        </div>
+
+        <div class="disclaimer-bullet">
+          <span class="bullet-num">4</span>
+          <div>
+            <strong>Dataset Independence:</strong>
+            <p>The VisDrone person detector and RescueNet semantic segmentation model were trained on separate research datasets. Their combined multimodal presentation is an operational prototype demonstration rather than an aligned single ground-truth sensor.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-dismiss-safety-modal">Acknowledge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommendation Review & Authorization Modal -->
+  <div class="modal-backdrop" id="review-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="review-modal-title">Advisory Resource Review</h3>
+        <button type="button" class="btn-close" id="btn-close-review-modal" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="review-dialog-content" id="review-dialog-content">
+          <!-- Filled dynamically by JavaScript -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-review">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-authorize-review">Confirm Coordinator Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Center -->
+  <div class="toast-center" id="toast-center" aria-live="polite"></div>
+
+  <!-- Application Script -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

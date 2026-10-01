@@ -1,0 +1,55 @@
+# Environments
+.venv/
+.venv*/
+env/
+venv/
+ENV/
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Datasets
+datasets/
+data/
+archive/
+RescueNet/
+*.zip
+*.tar
+*.gz
+
+# Model weights and artifacts
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.weights
+*.bin
+weights/
+runs/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+disaster_uav.db
+
+# Uploads and temporary assets
+uploads/*
+!uploads/.gitkeep
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/

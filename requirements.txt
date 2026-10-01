@@ -1,0 +1,12 @@
+ultralytics
+opencv-python
+numpy
+pandas
+pydantic
+fastapi
+uvicorn[standard]
+sqlalchemy
+pytest
+ruff
+python-multipart
+httpx

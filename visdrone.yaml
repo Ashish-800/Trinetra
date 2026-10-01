@@ -1,0 +1,15 @@
+# VisDrone 2019-DET Dataset Configuration for AI-Enabled UAV Disaster Assessment
+# Decoupled 3-class schema aligned with aerial search and rescue priorities:
+# 0: person   - Primary target for survivor detection and rescue planning
+# 1: vehicle  - Secondary target for evacuation assets and obstacle identification
+# 2: other    - Background infrastructure / non-critical objects
+
+path: archive/VisDrone
+train: VisDrone2019-DET-train/images
+val: VisDrone2019-DET-val/images
+test: VisDrone2019-DET-test-dev/images
+
+names:
+  0: person
+  1: vehicle
+  2: other
