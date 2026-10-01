@@ -65,14 +65,13 @@
         <div class="header-left">
           <span class="brand-title">TRINETRA</span>
           <span class="header-sep">/</span>
-          <span class="brand-subtitle">Disaster UAV Command Center</span>
-          <span class="header-sep">/</span>
-          <span class="header-section-name">Monitoring</span>
+          <span class="brand-subtitle">Disaster monitoring</span>
+          <span class="sr-only">Disaster UAV Command Center</span>
         </div>
 
         <div class="header-right">
           <!-- Sample Recon Button (Quick Evaluation) -->
-          <button type="button" class="btn btn-ghost btn-sm" id="btn-load-sample" title="Load real VisDrone validation image">
+          <button type="button" class="btn btn-secondary" id="btn-load-sample" title="Load real VisDrone validation image">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
               <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -82,28 +81,27 @@
           </button>
 
           <!-- Visually Prominent Upload Media Action -->
-          <label for="image-upload-input" class="btn btn-primary" id="btn-header-upload">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <label for="image-upload-input" class="btn btn-primary btn-upload-prominent" id="btn-header-upload">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            <span>Upload Media</span>
+            <span>Upload media</span>
           </label>
           <input type="file" id="image-upload-input" accept="image/jpeg,image/png,image/webp,video/mp4" style="display:none;">
 
           <!-- Diagnostics Icon Trigger -->
           <button type="button" class="btn-icon-subtle" id="btn-open-diagnostics" title="System Diagnostics (Hardware, Models)">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
           </button>
         </div>
       </header>
 
-      <!-- Main Operational Workspace: Left Analysis (~58%) + Right UAV Preview (~42%) -->
+      <!-- Main Operational Workspace: Left Analysis (~65%) + Right UAV Preview (~35%) -->
       <div class="workspace-container">
         
         <!-- INITIAL EMPTY STATE (Calm, Focused, No Empty Metric Cards) -->
@@ -121,9 +119,9 @@
               </svg>
             </div>
             <h1 class="empty-brand">TRINETRA</h1>
-            <h2 class="empty-title">Disaster Monitoring &amp; Assessment</h2>
+            <h2 class="empty-title">Disaster monitoring</h2>
             <p class="empty-description">
-              Upload an aerial UAV image or video to begin automated potential-person detection, environmental hazard segmentation, and emergency resource matching.
+              Upload an aerial image or video to begin analysis.
             </p>
             <div class="empty-actions">
               <label for="image-upload-input" class="btn btn-primary btn-lg">
@@ -132,14 +130,14 @@
                   <polyline points="17 8 12 3 7 8"></polyline>
                   <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
-                <span>Upload Media</span>
+                <span>Upload media</span>
               </label>
               <button type="button" class="btn btn-secondary btn-lg" id="btn-empty-sample">
-                <span>Load Sample Recon</span>
+                <span>Load sample recon</span>
               </button>
             </div>
             <div class="empty-drop-hint">
-              <span>Or drag and drop an aerial image or video here</span>
+              <span>Drag and drop an image or video here</span>
             </div>
             <div class="empty-footer-limits">
               <small>Local execution &bull; VisDrone YOLOv8n detector &bull; RescueNet 12-class segmentation</small>
@@ -151,90 +149,94 @@
         <div class="active-dashboard-grid" id="active-dashboard" style="display:none;">
 
           <!-- ========================================================
-               LEFT COLUMN: PRIMARY ANALYSIS AREA (~58%)
+               LEFT COLUMN: PRIMARY ANALYSIS AREA (~65%)
                ======================================================== -->
           <main class="primary-analysis-area" role="main">
-            
-            <!-- SECTION 1: CURRENT ASSESSMENT -->
-            <section class="analysis-card assessment-summary-card">
+                       <!-- SECTION 1: CURRENT ASSESSMENT (VISUAL HERO) -->
+            <section class="analysis-card assessment-hero-card">
               <div class="card-header-clean">
-                <div class="header-title-row">
-                  <span class="eyebrow-tag">CURRENT ASSESSMENT</span>
-                  <span class="badge badge-priority" id="badge-priority">STANDBY</span>
-                </div>
-                <div class="media-file-tag" id="label-media-filename">Awaiting file</div>
+                <span class="eyebrow-tag">CURRENT ASSESSMENT</span>
+                <span class="media-file-tag" id="label-media-filename" style="display:none;">Awaiting file</span>
               </div>
 
-              <!-- Primary Assessment Metrics (Numbers & Clean Badges, Not 6 Heavy Cards) -->
-              <div class="primary-metrics-strip">
-                <!-- Potential Persons -->
-                <div class="metric-block">
-                  <span class="metric-label">Potential Persons</span>
-                  <div class="metric-num-wrapper">
-                    <span class="metric-big-num" id="val-persons-count">0</span>
-                    <span class="metric-unit">detected</span>
+              <!-- Hero Summary Block: Large Typographic Hierarchy -->
+              <div class="assessment-hero-body">
+                <div class="hero-primary-line">
+                  <div class="hero-persons-badge">
+                    <span class="hero-num" id="val-persons-count">0</span>
+                    <span class="hero-persons-label" id="label-persons-unit">potential person</span>
+                  </div>
+                  <div class="hero-priority-group" id="btn-priority-expander" role="button" tabindex="0" title="Click to view contributing factors">
+                    <span class="hero-priority-val" id="badge-priority">STANDBY</span>
+                    <span class="hero-priority-sub">Priority</span>
                   </div>
                 </div>
 
-                <!-- Priority / Urgency Score -->
-                <div class="metric-block">
-                  <div class="metric-label-row">
-                    <span class="metric-label">Urgency</span>
-                    <span class="metric-sublabel" id="val-urgency-level">Low</span>
+                <!-- Inline Metrics Grid with Strong Typography -->
+                <div class="hero-metrics-grid">
+                  <!-- Urgency -->
+                  <div class="hero-metric-cell">
+                    <div class="metric-head">
+                      <span class="metric-title">Urgency</span>
+                      <span class="metric-sub" id="val-urgency-level">Low</span>
+                    </div>
+                    <div class="metric-score-display">
+                      <span class="score-large" id="val-urgency-score">0</span>
+                      <span class="score-slash">/ 100</span>
+                    </div>
+                    <div class="slim-progress-track">
+                      <div class="slim-progress-fill fill-urgency" id="bar-urgency" style="width: 0%;"></div>
+                    </div>
                   </div>
-                  <div class="metric-score-row">
-                    <span class="metric-score-val" id="val-urgency-score">0</span>
-                    <span class="metric-score-max">/ 100</span>
+
+                  <!-- Uncertainty -->
+                  <div class="hero-metric-cell">
+                    <div class="metric-head">
+                      <span class="metric-title">Uncertainty</span>
+                      <span class="metric-sub" id="val-uncertainty-level">Low</span>
+                    </div>
+                    <div class="metric-score-display">
+                      <span class="score-large" id="val-uncertainty-score">0</span>
+                      <span class="score-slash">/ 100</span>
+                    </div>
+                    <div class="slim-progress-track">
+                      <div class="slim-progress-fill fill-uncertainty" id="bar-uncertainty" style="width: 0%;"></div>
+                    </div>
                   </div>
-                  <div class="slim-progress-track">
-                    <div class="slim-progress-fill fill-urgency" id="bar-urgency" style="width: 0%;"></div>
+
+                  <!-- Hazard Severity -->
+                  <div class="hero-metric-cell status-cell">
+                    <span class="metric-title">Hazard</span>
+                    <div class="status-cell-val">
+                      <span class="status-badge badge-hazard" id="badge-hazard">NORMAL</span>
+                    </div>
+                  </div>
+
+                  <!-- Accessibility -->
+                  <div class="hero-metric-cell status-cell">
+                    <span class="metric-title">Accessibility</span>
+                    <div class="status-cell-val">
+                      <span class="status-badge badge-access" id="badge-access">ACCESSIBLE</span>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Uncertainty Score -->
-                <div class="metric-block">
-                  <div class="metric-label-row">
-                    <span class="metric-label">Uncertainty</span>
-                    <span class="metric-sublabel" id="val-uncertainty-level">Low</span>
+                <!-- Executive Summary Sentence -->
+                <div class="hero-summary-sentence">
+                  <p class="summary-paragraph" id="text-situation-summary">
+                    Awaiting image analysis to establish situational assessment.
+                  </p>
+                  <button type="button" class="btn-text-link" id="btn-toggle-factors" aria-expanded="false">
+                    <span>View contributing factors</span>
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="factors-drawer" id="factors-drawer" style="display:none;">
+                    <ul class="factors-list" id="factors-list">
+                      <li>Surveillance baseline established.</li>
+                    </ul>
                   </div>
-                  <div class="metric-score-row">
-                    <span class="metric-score-val" id="val-uncertainty-score">0</span>
-                    <span class="metric-score-max">/ 100</span>
-                  </div>
-                  <div class="slim-progress-track">
-                    <div class="slim-progress-fill fill-uncertainty" id="bar-uncertainty" style="width: 0%;"></div>
-                  </div>
-                </div>
-
-                <!-- Hazard & Accessibility Status Badges -->
-                <div class="metric-block status-tags-block">
-                  <div class="status-tag-row">
-                    <span class="status-tag-label">Hazard:</span>
-                    <span class="status-badge badge-hazard" id="badge-hazard">NORMAL</span>
-                  </div>
-                  <div class="status-tag-row">
-                    <span class="status-tag-label">Access:</span>
-                    <span class="status-badge badge-access" id="badge-access">ACCESSIBLE</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Unified Executive Situation Summary -->
-              <div class="situation-summary-box">
-                <p class="summary-paragraph" id="text-situation-summary">
-                  Awaiting image analysis to establish situational assessment.
-                </p>
-                <!-- Expandable Contributing Factors -->
-                <button type="button" class="btn-text-link" id="btn-toggle-factors" aria-expanded="false">
-                  <span>View contributing factors</span>
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-                <div class="factors-drawer" id="factors-drawer" style="display:none;">
-                  <ul class="factors-list" id="factors-list">
-                    <li>Surveillance baseline established.</li>
-                  </ul>
                 </div>
               </div>
             </section>
@@ -243,50 +245,49 @@
             <section class="analysis-card environmental-card">
               <div class="card-header-clean">
                 <span class="eyebrow-tag">ENVIRONMENTAL CONTEXT</span>
-                <span class="text-caption">RescueNet 12-Class Segmentation</span>
               </div>
 
               <!-- Slim Horizontal Progress Bars for Dominant Classes -->
               <div class="env-coverage-grid">
                 
-                <div class="env-row">
+                <div class="env-row" data-env="water" role="button" tabindex="0" title="Click to highlight Water layer">
                   <div class="env-row-header">
                     <span class="class-dot dot-water"></span>
-                    <span class="env-class-name">Water &amp; Flooding</span>
-                    <span class="env-class-pct" id="pct-water">0.0%</span>
+                    <span class="env-class-name">Water</span>
+                    <span class="env-class-pct" id="pct-water">0.00%</span>
                   </div>
                   <div class="env-bar-track">
                     <div class="env-bar-fill fill-water" id="bar-water" style="width: 0%;"></div>
                   </div>
                 </div>
 
-                <div class="env-row">
+                <div class="env-row" data-env="debris" role="button" tabindex="0" title="Click to highlight Debris layer">
                   <div class="env-row-header">
                     <span class="class-dot dot-debris"></span>
-                    <span class="env-class-name">Structural Debris</span>
-                    <span class="env-class-pct" id="pct-debris">0.0%</span>
+                    <span class="env-class-name">Debris</span>
+                    <span class="env-class-pct" id="pct-debris">0.00%</span>
                   </div>
                   <div class="env-bar-track">
                     <div class="env-bar-fill fill-debris" id="bar-debris" style="width: 0%;"></div>
                   </div>
                 </div>
 
-                <div class="env-row">
+                <div class="env-row" data-env="road" role="button" tabindex="0" title="Click to highlight Road layer">
                   <div class="env-row-header">
                     <span class="class-dot dot-road"></span>
-                    <span class="env-class-name">Road Network</span>
-                    <span class="env-class-pct" id="pct-road">0.0%</span>
+                    <span class="env-class-name">Road</span>
+                    <span class="env-class-pct" id="pct-road">0.00%</span>
                   </div>
                   <div class="env-bar-track">
                     <div class="env-bar-fill fill-road" id="bar-road" style="width: 0%;"></div>
                   </div>
                 </div>
 
-                <div class="env-row">
+                <div class="env-row" data-env="tree" role="button" tabindex="0" title="Click to highlight Vegetation layer">
                   <div class="env-row-header">
                     <span class="class-dot dot-tree"></span>
-                    <span class="env-class-name">Vegetation / Trees</span>
-                    <span class="env-class-pct" id="pct-tree">0.0%</span>
+                    <span class="env-class-name">Vegetation</span>
+                    <span class="env-class-pct" id="pct-tree">0.00%</span>
                   </div>
                   <div class="env-bar-track">
                     <div class="env-bar-fill fill-tree" id="bar-tree" style="width: 0%;"></div>
@@ -298,7 +299,7 @@
               <!-- Building Damage & Required Capabilities (Secondary, Compact) -->
               <div class="env-secondary-row">
                 <div class="building-damage-block">
-                  <span class="label-muted">Building Damage Index:</span>
+                  <span class="label-muted">Building Damage:</span>
                   <span class="val-damage-highlight" id="val-damage-pct">0.0%</span>
                   <button type="button" class="btn-micro" id="btn-toggle-damage-details">Details</button>
                   <div class="damage-breakdown-popover" id="damage-breakdown-popover" style="display:none;">
@@ -326,14 +327,14 @@
               </div>
 
               <div class="recommendation-content-body">
-                <div class="rec-headline-row">
+                <div class="rec-headline-row" id="rec-headline-group" role="button" tabindex="0" title="Click to review recommendation rationale">
                   <div class="rec-title-group">
                     <h3 class="rec-resource-name" id="rec-resource-name">Awaiting Evaluation</h3>
                     <span class="rec-resource-type" id="rec-resource-type">Emergency Support Asset</span>
                   </div>
                   <div class="rec-suitability-box">
-                    <span class="suitability-caption">Suitability</span>
                     <span class="suitability-score" id="rec-suitability-val">&mdash;</span>
+                    <span class="suitability-caption">suitability</span>
                   </div>
                 </div>
 
@@ -348,8 +349,8 @@
                   </div>
                 </div>
 
-                <div class="rec-rationale-box">
-                  <span class="spec-label">Recommendation Rationale:</span>
+                <div class="rec-rationale-box" id="rec-rationale-box">
+                  <span class="spec-label">System Rationale:</span>
                   <p class="rationale-text" id="rec-rationale-text">
                     Ingest aerial reconnaissance media to match available rescue capabilities against identified scene hazards.
                   </p>
@@ -363,8 +364,8 @@
                     </svg>
                     <span>Human authorization required. Autonomous dispatch is disabled.</span>
                   </div>
-                  <button type="button" class="btn btn-secondary btn-sm" id="btn-open-review-modal" disabled>
-                    Review Recommendation
+                  <button type="button" class="btn btn-primary" id="btn-open-review-modal" disabled>
+                    Review recommendation
                   </button>
                 </div>
               </div>
@@ -373,7 +374,7 @@
             <!-- SECTION 4: COMPACT PERSISTENT SAFETY NOTICE -->
             <footer class="persistent-safety-strip">
               <div class="safety-text-compact">
-                <strong>Safety Notice:</strong> Potential-person detections only &bull; Coordinates simulated &bull; Recommendations require human review
+                <strong>Safety notice:</strong> Potential-person detections only &bull; Coordinates simulated &bull; Recommendations require human review
               </div>
               <button type="button" class="btn-link" id="btn-open-limitations">View prototype limitations</button>
             </footer>
@@ -381,7 +382,7 @@
           </main>
 
           <!-- ========================================================
-               RIGHT COLUMN: UAV PREVIEW AREA (~42%)
+               RIGHT COLUMN: UAV EVIDENCE PREVIEW AREA (~35%)
                ======================================================== -->
           <aside class="uav-preview-area" aria-label="UAV Visual Evidence Preview">
             
@@ -389,12 +390,11 @@
               <!-- Preview Header & Compact Floating Controls -->
               <div class="preview-header">
                 <div class="preview-header-left">
-                  <span class="preview-title">UAV Evidence View</span>
-                  <span class="preview-meta-tag" id="preview-meta-tag">1024 &times; 768 px</span>
+                  <span class="preview-title">UAV evidence</span>
                 </div>
 
                 <!-- Compact Floating Layer Controls -->
-                <div class="preview-controls-row">
+                <div class="preview-controls-row" id="image-controls">
                   <label class="control-toggle" title="Toggle YOLO Person Bounding Boxes">
                     <input type="checkbox" id="toggle-yolo" checked>
                     <span class="control-label">Detections</span>
@@ -405,13 +405,15 @@
                     <span class="control-label">Environment</span>
                   </label>
 
-                  <div class="threshold-slider-group" title="Confidence filter threshold">
-                    <span class="thresh-label">Conf:</span>
-                    <input type="range" id="conf-slider" min="0.10" max="0.90" step="0.05" value="0.25">
-                    <span class="thresh-val" id="conf-val">0.25</span>
-                  </div>
-
                   <button type="button" class="btn-tool" id="btn-zoom-fit" title="Fit to view">Fit</button>
+                  <input type="range" id="conf-slider" min="0.10" max="0.90" step="0.05" value="0.25" style="display:none;">
+                </div>
+
+                <!-- Video Controls (Conditional for Video Media) -->
+                <div class="preview-controls-row video-controls-row" id="video-controls" style="display:none;">
+                  <button type="button" class="btn-tool" id="btn-video-play">Play</button>
+                  <button type="button" class="btn-tool" id="btn-video-timeline">Timeline</button>
+                  <button type="button" class="btn-tool" id="btn-video-fit">Fit</button>
                 </div>
               </div>
 
@@ -469,7 +471,7 @@
                 <div class="loading-overlay" id="loading-overlay" style="display:none;">
                   <div class="loading-card">
                     <div class="loading-spinner"></div>
-                    <h4 class="loading-heading">Analyzing Scene</h4>
+                    <h4 class="loading-heading">Analyzing scene</h4>
                     <div class="loading-stepper">
                       <div class="step-row" id="step-yolo">
                         <span class="step-dot">&bull;</span>
@@ -492,6 +494,7 @@
               <div class="detection-inspector-card" id="detection-inspector">
                 <div class="inspector-header">
                   <div class="track-title-row">
+                    <span class="inspector-badge">Potential person</span>
                     <span class="track-tag" id="val-selected-track-id">TRK-01</span>
                     <span class="track-conf" id="val-selected-conf">85% confidence</span>
                   </div>
@@ -516,15 +519,6 @@
           </aside>
 
         </div>
-
-        <!-- BOTTOM ANALYTICS & TIMELINE BAR -->
-        <section class="bottom-timeline-strip" id="bottom-timeline-bar" style="display:none;">
-          <div class="timeline-meta">
-            <span class="timeline-title">Sortie Timeline</span>
-            <span class="timeline-info" id="timeline-info-text">Frame 001 &bull; Single Aerial Assessment</span>
-            <span class="timeline-latency" id="timeline-latency-text">Inference: &mdash;</span>
-          </div>
-        </section>
 
       </div>
 

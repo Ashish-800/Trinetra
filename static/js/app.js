@@ -159,6 +159,12 @@ document.addEventListener("DOMContentLoaded", () => {
   btnLoadSample.addEventListener("click", loadSampleAction);
   btnEmptySample.addEventListener("click", loadSampleAction);
 
+  // URL query parameter support for testing / QA
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("sample") === "1") {
+    setTimeout(loadSampleAction, 300);
+  }
+
   // Drag & drop onto empty state
   emptyState.addEventListener("dragover", (e) => e.preventDefault());
   emptyState.addEventListener("drop", (e) => {
@@ -199,6 +205,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const isExpanded = btnToggleFactors.getAttribute("aria-expanded") === "true";
     btnToggleFactors.setAttribute("aria-expanded", !isExpanded);
     factorsDrawer.style.display = isExpanded ? "none" : "block";
+  });
+
+  // Priority Click Expands Contributing Factors (Requirement 15)
+  const btnPriorityExpander = document.getElementById("btn-priority-expander");
+  if (btnPriorityExpander) {
+    btnPriorityExpander.addEventListener("click", () => {
+      const isExpanded = btnToggleFactors.getAttribute("aria-expanded") === "true";
+      btnToggleFactors.setAttribute("aria-expanded", !isExpanded);
+      factorsDrawer.style.display = isExpanded ? "none" : "block";
+    });
+  }
+
+  // Recommendation Click Expands Rationale / Opens Review (Requirement 15)
+  const recHeadlineGroup = document.getElementById("rec-headline-group");
+  if (recHeadlineGroup) {
+    recHeadlineGroup.addEventListener("click", () => {
+      if (!btnOpenReviewModal.disabled) {
+        openReview();
+      }
+    });
+  }
+
+  // Environmental Category Click Highlights Layer (Requirement 15)
+  document.querySelectorAll(".env-row").forEach(row => {
+    row.addEventListener("click", () => {
+      const envType = row.getAttribute("data-env");
+      const wasHighlighted = row.classList.contains("highlighted");
+      document.querySelectorAll(".env-row").forEach(r => r.classList.remove("highlighted"));
+      if (!wasHighlighted) {
+        row.classList.add("highlighted");
+        const name = row.querySelector(".env-class-name")?.textContent || envType;
+        showToast(`Environmental focus: ${name} layer active`, "info");
+      } else {
+        showToast("Environmental focus reset", "info");
+      }
+    });
   });
 
   // Building Damage Breakdown Popover Toggle
@@ -317,9 +359,18 @@ document.addEventListener("DOMContentLoaded", () => {
         // Switch from Empty State to Active Dashboard
         emptyState.style.display = "none";
         activeDashboard.style.display = "grid";
-        bottomTimelineBar.style.display = "flex";
+        if (bottomTimelineBar) bottomTimelineBar.style.display = "none";
 
-        previewMetaTag.textContent = `${img.naturalWidth} \u00d7 ${img.naturalHeight} px`;
+        if (previewMetaTag) previewMetaTag.textContent = `${img.naturalWidth} \u00d7 ${img.naturalHeight} px`;
+
+        // Switch to video controls if video media
+        const isVideo = file.type && file.type.startsWith("video");
+        const imgControls = document.getElementById("image-controls");
+        const vidControls = document.getElementById("video-controls");
+        if (imgControls && vidControls) {
+          imgControls.style.display = isVideo ? "none" : "flex";
+          vidControls.style.display = isVideo ? "flex" : "none";
+        }
 
         renderCanvas();
         // Immediately run multimodal assessment
@@ -519,11 +570,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Potential Persons Count
     const personCount = result.total_detections_found || 0;
     valPersonsCount.textContent = personCount;
+    const labelPersonsUnit = document.getElementById("label-persons-unit");
+    if (labelPersonsUnit) {
+      labelPersonsUnit.textContent = personCount === 1 ? "potential person" : "potential persons";
+    }
 
     // 2. Priority Badge
     const prioLevel = (prio.composite_priority || "STANDBY").toUpperCase();
     badgePriority.textContent = prioLevel;
-    badgePriority.className = "badge badge-priority " + (
+    badgePriority.className = "hero-priority-val " + (
       prioLevel.includes("CRITICAL") ? "critical" :
       prioLevel.includes("HIGH") ? "high" : ""
     );
@@ -575,21 +630,21 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateEnvironmentalPanel(scene) {
     if (!scene) return;
 
-    // Slim Progress Bars
+    // Slim Progress Bars (Formatted to 2 decimal places per specification)
     const water = scene.water_coverage_pct || 0;
-    pctWater.textContent = `${water.toFixed(1)}%`;
+    pctWater.textContent = `${water.toFixed(2)}%`;
     barWater.style.width = `${Math.min(100, water)}%`;
 
     const debris = scene.debris_coverage_pct || 0;
-    pctDebris.textContent = `${debris.toFixed(1)}%`;
+    pctDebris.textContent = `${debris.toFixed(2)}%`;
     barDebris.style.width = `${Math.min(100, debris)}%`;
 
     const road = scene.road_coverage_pct || 0;
-    pctRoad.textContent = `${road.toFixed(1)}%`;
+    pctRoad.textContent = `${road.toFixed(2)}%`;
     barRoad.style.width = `${Math.min(100, road)}%`;
 
     const tree = scene.tree_coverage_pct || 0;
-    pctTree.textContent = `${tree.toFixed(1)}%`;
+    pctTree.textContent = `${tree.toFixed(2)}%`;
     barTree.style.width = `${Math.min(100, tree)}%`;
 
     // Building Damage
